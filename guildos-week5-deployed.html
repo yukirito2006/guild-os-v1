@@ -1,0 +1,2684 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>GuildOS — AI-Powered Community Operating System</title>
+<meta name="description" content="GuildOS transforms Thai gaming Facebook Groups and Discord servers into self-managing ecosystems powered by AI — moderation, matchmaking, and member intelligence.">
+<meta name="theme-color" content="#7C5CFC">
+<meta property="og:title" content="GuildOS — Run your gaming guild on autopilot.">
+<meta property="og:description" content="AI-powered moderation, matchmaking, and audience intelligence for Thai gaming communities.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://guildos.app">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="GuildOS — Community Operating System">
+<meta name="twitter:description" content="AI agents that manage your Thai gaming community 24/7.">
+<link rel="shortcut icon" type="image/x-icon" href="data:,">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0F0F14;--surf:#1A1A24;--surf2:#222234;--surf3:#2A2A3E;
+  --acc:#7C5CFC;--acc2:#9B7FFF;--grn:#00E5A0;--red:#FF4757;--amb:#FFA502;--blu:#38B6FF;
+  --txt:#E8E8F0;--sub:#A0A0C0;--mut:#5A5A7A;--bdr:#252538;
+  --acc-dim:rgba(124,92,252,0.12);--grn-dim:rgba(0,229,160,0.1);--red-dim:rgba(255,71,87,0.1);
+  --font-head:'Rajdhani',sans-serif;--font-body:'IBM Plex Sans Thai',sans-serif;--font-mono:'IBM Plex Mono',monospace;
+  --r:10px;--r2:14px;--r3:18px;
+}
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--font-body);font-size:14px;overflow:hidden;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:4px;}
+
+/* ── LAYOUT ── */
+#app{display:flex;height:100vh;overflow:hidden;}
+#sidebar{width:210px;background:var(--surf);border-right:1px solid var(--bdr);display:flex;flex-direction:column;flex-shrink:0;}
+.sb-logo{padding:18px 16px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:10px;}
+.sb-logo-icon{width:34px;height:34px;background:var(--acc);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.sb-logo-name{font-family:var(--font-head);font-size:18px;font-weight:700;letter-spacing:1px;}
+.sb-logo-sub{font-size:9px;color:var(--mut);letter-spacing:2px;}
+.sb-section{padding:10px 12px 4px;font-size:9px;color:var(--mut);letter-spacing:2px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 14px;margin:2px 8px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--sub);transition:all 0.15s;user-select:none;}
+.nav-item:hover{background:rgba(255,255,255,0.04);color:var(--txt);}
+.nav-item.active{background:var(--acc-dim);color:var(--acc);font-weight:600;}
+.nav-item .nav-icon{font-size:15px;width:18px;text-align:center;}
+.sb-community{margin:auto 12px 12px;background:var(--acc-dim);border:1px solid rgba(124,92,252,0.3);border-radius:var(--r);padding:12px 14px;}
+.sb-comm-name{font-size:12px;font-weight:700;color:var(--acc);}
+.sb-comm-live{font-size:10px;color:var(--mut);margin-top:3px;display:flex;align-items:center;gap:5px;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--grn);box-shadow:0 0 6px var(--grn);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+#main{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+#topbar{height:50px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 24px;gap:14px;flex-shrink:0;}
+.topbar-live{font-size:11px;color:var(--sub);display:flex;align-items:center;gap:6px;}
+.topbar-user{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.topbar-avatar{width:28px;height:28px;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:var(--font-head);}
+.topbar-name{font-size:12px;color:var(--sub);}
+#page-area{flex:1;overflow-y:auto;padding:28px 32px;}
+
+/* ── LANDING ── */
+#landing{display:none;width:100%;height:100vh;overflow-y:auto;background:var(--bg);}
+#landing.show{display:block;}
+.landing-nav{display:flex;justify-content:space-between;align-items:center;padding:18px 48px;border-bottom:1px solid var(--bdr);}
+.landing-logo{display:flex;align-items:center;gap:10px;}
+.landing-logo-icon{width:36px;height:36px;background:var(--acc);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.landing-logo-name{font-family:var(--font-head);font-size:20px;font-weight:700;letter-spacing:1px;}
+.landing-nav-btns{display:flex;gap:10px;}
+.hero{text-align:center;padding:72px 20px 52px;}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;background:var(--acc-dim);border:1px solid rgba(124,92,252,0.35);border-radius:99px;padding:7px 18px;font-size:11px;color:var(--acc2);margin-bottom:28px;letter-spacing:0.5px;}
+.hero-h1{font-family:var(--font-head);font-size:64px;font-weight:700;line-height:1.0;margin-bottom:18px;letter-spacing:1px;}
+.hero-h1 span{color:var(--acc);}
+.hero-sub{font-size:16px;color:var(--sub);max-width:520px;margin:0 auto 36px;line-height:1.8;}
+.hero-btns{display:flex;gap:14px;justify-content:center;}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:900px;margin:0 auto 48px;padding:0 24px;}
+.feature-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r2);padding:26px;}
+.feature-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px;}
+.feature-title{font-family:var(--font-head);font-size:18px;font-weight:700;margin-bottom:8px;}
+.feature-desc{font-size:12px;color:var(--sub);line-height:1.8;}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:860px;margin:0 auto 60px;padding:0 24px;}
+.price-card{background:var(--surf);border:2px solid var(--bdr);border-radius:var(--r2);padding:24px;transition:border-color 0.2s;}
+.price-card.featured{border-color:var(--acc);background:var(--acc-dim);}
+.price-popular{display:inline-block;background:rgba(124,92,252,0.2);color:var(--acc2);font-size:10px;font-weight:700;letter-spacing:1px;padding:3px 10px;border-radius:99px;margin-bottom:8px;}
+.price-name{font-family:var(--font-head);font-size:18px;font-weight:700;margin-bottom:8px;}
+.price-amount{font-family:var(--font-head);font-size:32px;font-weight:700;color:var(--acc);}
+.price-amount span{font-size:14px;font-weight:400;color:var(--mut);}
+.price-members{font-size:11px;color:var(--mut);margin:4px 0 14px;}
+.price-feat{font-size:12px;color:var(--sub);margin-bottom:5px;}
+
+/* ── LOGIN PAGE ── */
+#login-view{display:none;width:100%;height:100vh;align-items:center;justify-content:center;background:var(--bg);flex-direction:column;}
+#login-view.show{display:flex;}
+.login-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r3);padding:40px;width:100%;max-width:420px;}
+.login-logo{text-align:center;margin-bottom:32px;}
+.login-logo-icon{width:52px;height:52px;background:var(--acc);border-radius:14px;display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:12px;}
+.login-logo-name{font-family:var(--font-head);font-size:22px;font-weight:700;letter-spacing:1px;display:block;}
+.login-logo-sub{font-size:11px;color:var(--mut);letter-spacing:1.5px;}
+.input-group{margin-bottom:16px;}
+.input-label{font-size:11px;color:var(--sub);font-weight:600;letter-spacing:0.5px;margin-bottom:6px;display:block;}
+.input-field{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--r);padding:11px 14px;color:var(--txt);font-size:14px;outline:none;font-family:var(--font-body);transition:border-color 0.15s;width:100%;}
+.input-field:focus{border-color:var(--acc);}
+.input-field.error{border-color:var(--red);}
+.input-error{font-size:11px;color:var(--red);margin-top:5px;display:none;}
+.input-error.show{display:block;}
+.login-footer{text-align:center;margin-top:20px;font-size:12px;color:var(--mut);}
+.login-footer a{color:var(--acc);text-decoration:none;cursor:pointer;}
+.login-footer a:hover{text-decoration:underline;}
+.demo-hint{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--r);padding:10px 14px;margin-bottom:20px;font-size:11px;color:var(--sub);line-height:1.6;}
+.demo-hint strong{color:var(--acc2);}
+
+/* ── COMMUNITY SETUP WIZARD ── */
+#setup-view{display:none;width:100%;height:100vh;overflow-y:auto;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;}
+#setup-view.show{display:flex;}
+.setup-wrap{width:100%;max-width:560px;padding:20px;}
+.setup-header{text-align:center;margin-bottom:32px;}
+.setup-header h1{font-family:var(--font-head);font-size:26px;font-weight:700;margin-bottom:6px;}
+.setup-header p{font-size:13px;color:var(--sub);}
+.step-indicator{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:32px;}
+.step-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:var(--font-head);border:2px solid var(--bdr);color:var(--mut);background:var(--surf);transition:all 0.3s;flex-shrink:0;}
+.step-dot.done{background:var(--grn);border-color:var(--grn);color:#0F0F14;}
+.step-dot.active{background:var(--acc);border-color:var(--acc);color:#fff;}
+.step-line{width:60px;height:2px;background:var(--bdr);transition:background 0.3s;}
+.step-line.done{background:var(--grn);}
+.step-label{font-size:10px;color:var(--mut);text-align:center;margin-top:6px;}
+.setup-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r2);padding:28px;}
+.setup-step{display:none;}
+.setup-step.active{display:block;}
+.webhook-box{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--r);padding:12px 14px;font-family:var(--font-mono);font-size:12px;color:var(--grn);word-break:break-all;margin:12px 0;}
+.platform-instructions{margin-top:16px;}
+.plat-tab{display:flex;gap:6px;margin-bottom:12px;}
+.plat-tab-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--bdr);background:transparent;color:var(--sub);font-size:11px;cursor:pointer;font-family:var(--font-body);transition:all 0.15s;}
+.plat-tab-btn.active{background:var(--acc-dim);border-color:var(--acc);color:var(--acc);}
+.plat-steps{background:var(--surf2);border-radius:var(--r);padding:14px 16px;font-size:12px;color:var(--sub);line-height:2;}
+.summary-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bdr);font-size:13px;}
+.summary-row:last-child{border:none;}
+.setup-nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;}
+
+/* ── ONBOARDING (Member Chat) ── */
+#onboarding-view{display:none;width:100%;height:100vh;overflow:hidden;flex-direction:column;}
+#onboarding-view.show{display:flex;}
+.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 50px);}
+.chat-msgs{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:14px;}
+.msg-row-bot{display:flex;align-items:flex-end;gap:10px;}
+.msg-row-user{display:flex;justify-content:flex-end;}
+.bot-av{width:30px;height:30px;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.bubble-bot{background:var(--surf);padding:12px 16px;border-radius:18px 18px 18px 4px;font-size:13px;line-height:1.7;max-width:78%;}
+.bubble-user{background:var(--acc);padding:12px 16px;border-radius:18px 18px 4px 18px;font-size:13px;line-height:1.7;max-width:78%;}
+.chat-input{padding:14px 24px;border-top:1px solid var(--bdr);}
+.typing-dot{width:7px;height:7px;background:var(--acc);border-radius:50%;display:inline-block;margin:0 2px;animation:tdot 1s infinite;}
+.typing-dot:nth-child(2){animation-delay:.2s;}
+.typing-dot:nth-child(3){animation-delay:.4s;}
+@keyframes tdot{0%,80%,100%{transform:scale(0.4)}40%{transform:scale(1)}}
+.skill-card-preview{background:linear-gradient(135deg,var(--surf2),var(--bg));border:1px solid var(--acc);border-radius:var(--r2);padding:20px;margin-top:10px;}
+
+/* ── BUTTONS ── */
+.btn{border:none;border-radius:var(--r);padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:var(--font-body);}
+.btn:active{transform:scale(0.97);}
+.btn:disabled{opacity:0.55;cursor:not-allowed;transform:none;}
+.btn-primary{background:var(--acc);color:#fff;}
+.btn-primary:hover:not(:disabled){background:var(--acc2);}
+.btn-outline{background:transparent;border:1px solid var(--bdr);color:var(--txt);}
+.btn-outline:hover{border-color:var(--sub);background:rgba(255,255,255,0.03);}
+.btn-green{background:transparent;border:1px solid var(--grn);color:var(--grn);padding:5px 12px;font-size:11px;}
+.btn-red{background:transparent;border:1px solid var(--red);color:var(--red);padding:5px 12px;font-size:11px;}
+.btn-danger{background:var(--red);color:#fff;}
+.btn-sm{padding:6px 14px;font-size:12px;}
+.btn-lg{padding:13px 30px;font-size:15px;border-radius:var(--r2);}
+.btn-full{width:100%;padding:12px;font-size:14px;}
+
+/* ── CARDS & COMMON ── */
+.card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r2);padding:20px 22px;margin-bottom:16px;}
+.card-title{font-family:var(--font-head);font-size:15px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.metrics-row{display:grid;gap:12px;margin-bottom:20px;}
+.metric-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r2);padding:18px 20px;}
+.metric-label{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;}
+.metric-value{font-family:var(--font-mono);font-size:30px;font-weight:600;}
+.metric-sub{font-size:10px;color:var(--mut);margin-top:5px;}
+.metric-icon{float:right;width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;white-space:nowrap;}
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{padding:10px 14px;text-align:left;font-size:9px;color:var(--mut);letter-spacing:2px;text-transform:uppercase;background:var(--surf2);font-weight:600;}
+td{padding:11px 14px;border-bottom:1px solid var(--bdr);font-size:12px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,0.02);}
+
+/* ── FORM INPUTS ── */
+input[type=text],input[type=email],input[type=password],input[type=search],input[type=number],select,textarea{
+  background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--r);
+  padding:9px 13px;color:var(--txt);font-size:13px;outline:none;
+  font-family:var(--font-body);transition:border-color 0.15s;width:100%;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--acc);}
+select{cursor:pointer;width:auto;}
+input[type=range]{accent-color:var(--acc);width:100%;cursor:pointer;}
+.form-row{margin-bottom:16px;}
+.form-label{font-size:11px;color:var(--sub);font-weight:600;letter-spacing:0.5px;margin-bottom:6px;display:block;}
+.form-hint{font-size:11px;color:var(--mut);margin-top:5px;}
+
+/* ── TOGGLE ── */
+.toggle{width:44px;height:24px;border-radius:12px;cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;border:none;}
+.toggle-knob{position:absolute;top:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:left 0.2s;pointer-events:none;}
+
+/* ── MEMBER GRID ── */
+.member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+.member-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r2);padding:16px 18px;cursor:pointer;transition:border-color 0.15s;}
+.member-card:hover{border-color:var(--acc);}
+.avatar{border-radius:50%;background:rgba(124,92,252,0.2);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--acc);font-family:var(--font-head);flex-shrink:0;}
+.progress-bar{height:4px;background:var(--bdr);border-radius:4px;overflow:hidden;margin-top:4px;}
+.progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--acc),var(--grn));}
+
+/* ── DRAWER ── */
+.drawer{position:fixed;top:0;right:-380px;width:360px;height:100vh;background:var(--surf);border-left:1px solid var(--bdr);padding:24px;overflow-y:auto;z-index:300;transition:right 0.25s;box-shadow:-12px 0 40px rgba(0,0,0,0.5);}
+.drawer.open{right:0;}
+#drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;}
+#drawer-overlay.show{display:block;}
+
+/* ── MATCH CARDS ── */
+.match-req{background:var(--surf2);border-radius:var(--r);padding:12px 14px;margin-bottom:10px;border:1px solid var(--bdr);}
+.team-card{background:var(--surf2);border-radius:var(--r);padding:14px;margin-bottom:10px;border:1px solid var(--bdr);}
+.player-pill{display:inline-flex;align-items:center;gap:6px;background:var(--surf);border-radius:8px;padding:5px 9px;margin:3px;}
+.player-av{width:26px;height:26px;border-radius:50%;background:rgba(124,92,252,0.25);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--acc);font-family:var(--font-head);}
+
+/* ── INSIGHTS ── */
+.insight-row{display:grid;gap:14px;margin-bottom:14px;}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.bar-label{width:130px;font-size:11px;color:var(--sub);flex-shrink:0;}
+.bar-track{flex:1;background:var(--bdr);border-radius:4px;height:18px;overflow:hidden;}
+.bar-fill-grn{height:100%;background:var(--grn);border-radius:4px;}
+.bar-val{font-size:11px;font-weight:600;color:var(--txt);width:32px;text-align:right;}
+.mono-insight{background:linear-gradient(135deg,#5b3fd8,var(--acc));border-radius:var(--r2);padding:24px;color:#fff;}
+
+/* ── PLAN CARDS ── */
+.plan-card{background:var(--surf2);border:2px solid var(--bdr);border-radius:var(--r2);padding:18px;cursor:pointer;transition:all 0.15s;}
+.plan-card:hover{border-color:rgba(124,92,252,0.4);}
+.plan-card.chosen{background:var(--acc-dim);border-color:var(--acc);}
+.plan-price-big{font-family:var(--font-head);font-size:26px;font-weight:700;color:var(--acc);margin:8px 0 4px;}
+
+/* ── PAGE TITLE ── */
+.page-hdr{margin-bottom:22px;}
+.page-hdr h1{font-family:var(--font-head);font-size:28px;font-weight:700;letter-spacing:0.5px;}
+.page-hdr p{font-size:13px;color:var(--sub);margin-top:3px;}
+
+/* ── TABS ── */
+.tab-row{display:flex;gap:4px;background:var(--surf2);border-radius:10px;padding:4px;width:fit-content;margin-bottom:20px;}
+.tab-btn{padding:7px 18px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;color:var(--sub);border:none;background:transparent;font-family:var(--font-body);transition:all 0.15s;}
+.tab-btn.active{background:var(--acc);color:#fff;}
+
+/* ── TOAST ── */
+#toast-container{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+.toast{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:12px 16px;font-size:13px;min-width:240px;max-width:340px;display:flex;align-items:center;gap:10px;animation:slideIn 0.2s ease;box-shadow:0 4px 20px rgba(0,0,0,0.4);}
+.toast.success{border-left:3px solid var(--grn);}
+.toast.error{border-left:3px solid var(--red);}
+.toast.info{border-left:3px solid var(--acc);}
+@keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ── CONFIRM MODAL ── */
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;}
+#modal-overlay.show{display:flex;}
+.modal-box{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r2);padding:28px;max-width:400px;width:90%;}
+.modal-title{font-family:var(--font-head);font-size:18px;font-weight:700;margin-bottom:10px;}
+.modal-body{font-size:13px;color:var(--sub);line-height:1.7;margin-bottom:20px;}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;}
+
+/* ── SKELETON ── */
+.skeleton{background:linear-gradient(90deg,var(--surf2) 25%,var(--surf3) 50%,var(--surf2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--r);}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ── DANGER ZONE ── */
+.danger-zone{border:1px solid rgba(255,71,87,0.3);border-radius:var(--r2);padding:20px;background:rgba(255,71,87,0.05);}
+.danger-zone-title{font-size:13px;font-weight:700;color:var(--red);margin-bottom:8px;}
+.danger-zone-desc{font-size:12px;color:var(--sub);margin-bottom:14px;line-height:1.7;}
+
+/* ── FEED ── */
+.feed-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--bdr);}
+.feed-item:last-child{border:none;}
+
+/* ── WEEK 3: AI CONTROL PANEL ── */
+.collapsible-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;padding:2px 0;}
+.collapsible-header:hover .collapse-icon{color:var(--acc);}
+.collapse-icon{font-size:12px;color:var(--mut);transition:transform 0.2s;flex-shrink:0;}
+.collapse-icon.open{transform:rotate(180deg);}
+.collapsible-body{overflow:hidden;transition:max-height 0.3s ease;}
+.gradient-slider-wrap{position:relative;margin-top:6px;}
+.gradient-track{height:6px;border-radius:3px;background:linear-gradient(90deg,#00E5A0 0%,#FFA502 50%,#FF4757 100%);margin-bottom:8px;}
+.threshold-marker{position:absolute;top:-8px;width:2px;height:22px;background:#fff;border-radius:1px;pointer-events:none;box-shadow:0 0 4px rgba(0,0,0,0.5);}
+.mod-log-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr);}
+.mod-log-item:last-child{border:none;}
+.log-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.log-time{font-size:10px;color:var(--mut);white-space:nowrap;}
+.mm-rules-panel{background:var(--surf2);border-radius:var(--r);padding:16px 18px;margin-bottom:14px;border:1px solid var(--bdr);}
+.game-size-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.game-size-label{width:110px;font-size:12px;color:var(--sub);flex-shrink:0;}
+.game-size-input{width:60px;text-align:center;padding:6px;}
+.hist-table-wrap{max-height:260px;overflow-y:auto;}
+.notif-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--bdr);}
+.notif-row:last-child{border:none;}
+.notif-label{font-size:13px;}
+.notif-sub{font-size:11px;color:var(--mut);margin-top:2px;}
+.usage-row{margin-bottom:14px;}
+.usage-header{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;}
+.usage-bar{height:6px;background:var(--bdr);border-radius:3px;overflow:hidden;}
+.usage-fill{height:100%;border-radius:3px;transition:width 0.5s;}
+.plan-upgrade-modal{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.webhook-test-row{display:flex;gap:8px;align-items:center;margin-top:10px;}
+.ai-link-card{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:border-color 0.15s;margin-bottom:10px;}
+.ai-link-card:hover{border-color:var(--acc);}
+.checkbox-custom{width:16px;height:16px;border:2px solid var(--bdr);border-radius:4px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.checkbox-custom.checked{background:var(--acc);border-color:var(--acc);}
+.row-checkbox{width:16px;height:16px;accent-color:var(--acc);cursor:pointer;}
+@keyframes rowFlash{0%{background:rgba(124,92,252,0.2)}100%{background:transparent}}
+.new-row{animation:rowFlash 1.5s ease;}
+
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* ══════════════════════════════════════════
+   WEEK 5: MOBILE RESPONSIVE + NEW COMPONENTS
+   ══════════════════════════════════════════ */
+
+/* ── ERROR BOUNDARY ── */
+.error-boundary{background:var(--surf);border:1px solid rgba(255,71,87,0.3);border-radius:var(--r2);padding:32px;text-align:center;margin:20px 0;}
+.error-boundary-icon{font-size:36px;margin-bottom:12px;}
+.error-boundary-title{font-family:var(--font-head);font-size:18px;font-weight:700;margin-bottom:8px;color:var(--red);}
+.error-boundary-msg{font-size:13px;color:var(--sub);margin-bottom:16px;line-height:1.7;}
+
+/* ── 404 PAGE ── */
+#not-found{display:none;width:100%;height:100vh;align-items:center;justify-content:center;flex-direction:column;text-align:center;background:var(--bg);}
+#not-found.show{display:flex;}
+.nf-code{font-family:var(--font-head);font-size:80px;font-weight:700;color:var(--acc);line-height:1;margin-bottom:12px;}
+.nf-title{font-family:var(--font-head);font-size:24px;font-weight:700;margin-bottom:8px;}
+.nf-sub{font-size:14px;color:var(--sub);margin-bottom:24px;}
+
+/* ── INTEGRATION CARDS ── */
+.integration-card{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--r2);padding:20px;margin-bottom:14px;}
+.integration-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.integration-logo{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.integration-name{font-family:var(--font-head);font-size:17px;font-weight:700;}
+.integration-status{font-size:11px;color:var(--mut);margin-top:2px;}
+.webhook-readonly{background:var(--bg);border:1px solid var(--bdr);border-radius:8px;padding:9px 12px;font-family:var(--font-mono);font-size:11px;color:var(--grn);word-break:break-all;flex:1;line-height:1.5;}
+.accordion-item{border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;margin-bottom:8px;}
+.accordion-header{padding:11px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600;user-select:none;transition:background 0.15s;}
+.accordion-header:hover{background:rgba(255,255,255,0.03);}
+.accordion-body{padding:0 14px;max-height:0;overflow:hidden;transition:max-height 0.3s ease,padding 0.3s;}
+.accordion-body.open{max-height:400px;padding:12px 14px;}
+.step-list{counter-reset:step;}
+.step-list li{counter-increment:step;padding:7px 0;font-size:12px;color:var(--sub);display:flex;gap:10px;line-height:1.6;}
+.step-list li::before{content:counter(step);width:20px;height:20px;background:var(--acc-dim);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--acc);flex-shrink:0;margin-top:1px;}
+
+/* ── HEALTH CHECKER ── */
+.health-card{background:var(--surf2);border-radius:var(--r);padding:13px 16px;margin-bottom:8px;display:flex;align-items:center;gap:14px;border:1px solid var(--bdr);transition:border-color 0.2s;}
+.health-card.pass{border-left:3px solid var(--grn);}
+.health-card.fail{border-left:3px solid var(--red);}
+.health-card.checking{border-left:3px solid var(--amb);}
+.health-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.health-icon.pass{background:rgba(0,229,160,0.15);}
+.health-icon.fail{background:rgba(255,71,87,0.15);}
+.health-icon.checking{background:rgba(255,165,2,0.15);}
+.health-name{font-size:13px;font-weight:600;}
+.health-detail{font-size:11px;color:var(--mut);margin-top:2px;}
+.status-banner{border-radius:var(--r2);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.status-banner.ok{background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.3);}
+.status-banner.warn{background:rgba(255,165,2,0.1);border:1px solid rgba(255,165,2,0.3);}
+
+/* ── MOBILE HAMBURGER ── */
+#hamburger-btn{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:6px;border:none;background:transparent;}
+#hamburger-btn span{display:block;width:20px;height:2px;background:var(--txt);border-radius:2px;transition:all 0.2s;}
+#mobile-nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:400;}
+#mobile-nav-overlay.show{display:block;}
+
+/* ── MOBILE SIDEBAR ── */
+#mobile-sidebar{position:fixed;top:0;left:-260px;width:240px;height:100vh;background:var(--surf);border-right:1px solid var(--bdr);z-index:500;transition:left 0.25s;overflow-y:auto;box-shadow:4px 0 20px rgba(0,0,0,0.4);}
+#mobile-sidebar.open{left:0;}
+#sidebar-toggle-btn{display:none;width:36px;height:36px;border:1px solid var(--bdr);border-radius:8px;background:transparent;color:var(--txt);cursor:pointer;font-size:16px;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* ── SKELETON LOADERS ── */
+.skel-row{display:flex;gap:12px;margin-bottom:12px;}
+.skel-block{border-radius:var(--r);}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel-block,.skeleton{background:linear-gradient(90deg,var(--surf2) 25%,var(--surf3) 50%,var(--surf2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--r);}
+
+/* ════════════════════════════════════════
+   MOBILE RESPONSIVE — 768px and below
+   ════════════════════════════════════════ */
+@media (max-width:768px){
+  /* Sidebar → hidden, mobile sidebar shown instead */
+  #sidebar{display:none;}
+  #sidebar-toggle-btn{display:flex;}
+  html,body{overflow:auto;}
+  #app{flex-direction:column;height:auto;min-height:100vh;overflow:visible;}
+  #main{height:auto;}
+  #topbar{padding:0 14px;position:sticky;top:0;z-index:100;background:var(--surf);}
+  #page-area{padding:16px;overflow-y:visible;}
+
+  /* Metrics → 2 col on tablet, 1 col on mobile */
+  .metrics-row{grid-template-columns:repeat(2,1fr) !important;}
+  .metric-value{font-size:22px;}
+
+  /* Member grid → 2 col */
+  .member-grid{grid-template-columns:repeat(2,1fr);}
+
+  /* Tables → horizontal scroll */
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  table{min-width:500px;}
+
+  /* Two-panel grids → stack */
+  [style*="grid-template-columns:1fr 1fr"],
+  [style*="grid-template-columns:1fr 1.6fr"],
+  [style*="grid-template-columns:1.5fr 1fr"],
+  [style*="grid-template-columns:1fr 1.5fr"]{
+    grid-template-columns:1fr !important;
+  }
+  [style*="grid-template-columns:repeat(3,1fr)"]{
+    grid-template-columns:1fr 1fr !important;
+  }
+  [style*="grid-template-columns:repeat(4,1fr)"]{
+    grid-template-columns:repeat(2,1fr) !important;
+  }
+
+  /* Charts height reduced */
+  canvas{max-height:200px !important;}
+
+  /* Settings tabs → scrollable */
+  .tab-row{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .tab-btn{white-space:nowrap;flex-shrink:0;}
+
+  /* Plan cards → single column */
+  .plan-upgrade-modal{grid-template-columns:1fr !important;}
+  
+  /* Chat → full height */
+  #onboarding-view{height:100dvh;}
+  .chat-msgs{padding:14px 12px;}
+  .bubble-bot,.bubble-user{max-width:90%;}
+  
+  /* Dashboard page area */
+  #page-area{height:auto;min-height:calc(100vh - 50px);}
+}
+
+@media (max-width:480px){
+  /* Single column everything */
+  .metrics-row{grid-template-columns:1fr !important;}
+  .member-grid{grid-template-columns:1fr;}
+  [style*="grid-template-columns:repeat(2,1fr)"],
+  [style*="grid-template-columns:repeat(3,1fr)"]{
+    grid-template-columns:1fr !important;
+  }
+  
+  /* Landing hero */
+  .hero-h1{font-size:clamp(32px,8vw,64px) !important;}
+  .hero-btns{flex-direction:column;align-items:stretch;}
+  .hero-btns .btn{width:100%;}
+  
+  /* Landing nav */
+  .landing-nav-btns{display:none;}
+  .landing-nav-btns.mobile-open{display:flex;flex-direction:column;position:fixed;top:60px;right:16px;background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r2);padding:12px;gap:8px;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,0.4);}
+  #hamburger-btn{display:flex;}
+  
+  /* Features + Pricing → single col */
+  .features-grid,.pricing-grid{grid-template-columns:1fr !important;}
+  
+  /* Chat input */
+  .chat-input{padding:10px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom));}
+  #chat-input-area{position:sticky;bottom:0;background:var(--bg);}
+  
+  /* Skill card preview → single col */
+  .skill-card-preview [style*="grid-template-columns:1fr 1fr"]{
+    grid-template-columns:1fr !important;
+  }
+  
+  /* Drawer full width */
+  .drawer{width:100%;right:-100%;}
+  .drawer.open{right:0;}
+}
+
+</style>
+</head>
+<body>
+
+<!-- ═══ TOAST CONTAINER ═══ -->
+<div id="toast-container"></div>
+
+<!-- ═══ 404 PAGE ═══ -->
+<div id="not-found">
+  <div class="nf-code">404</div>
+  <div class="nf-title">หน้านี้ไม่มีอยู่</div>
+  <div class="nf-sub">ไม่พบหน้าที่คุณกำลังมองหา</div>
+  <button class="btn btn-primary btn-lg" onclick="showLanding()">← กลับหน้าหลัก</button>
+</div>
+
+<!-- ═══ MOBILE SIDEBAR ═══ -->
+<div id="mobile-nav-overlay" onclick="closeMobileSidebar()"></div>
+<div id="mobile-sidebar">
+  <div class="sb-logo" style="padding:16px">
+    <div class="sb-logo-icon">🎮</div>
+    <div><div class="sb-logo-name">GuildOS</div><div class="sb-logo-sub">COMMUNITY OS</div></div>
+    <button onclick="closeMobileSidebar()" style="margin-left:auto;background:transparent;border:none;color:var(--mut);font-size:18px;cursor:pointer">✕</button>
+  </div>
+  <div class="sb-section">WORKSPACE</div>
+  <div class="nav-item" onclick="navTo('overview',this);closeMobileSidebar()"><span class="nav-icon">⊞</span> Overview</div>
+  <div class="nav-item" onclick="navTo('moderation',this);closeMobileSidebar()"><span class="nav-icon">🛡</span> Moderation</div>
+  <div class="nav-item" onclick="navTo('matchmaking',this);closeMobileSidebar()"><span class="nav-icon">⚔</span> Matchmaking</div>
+  <div class="nav-item" onclick="navTo('members',this);closeMobileSidebar()"><span class="nav-icon">👥</span> Members</div>
+  <div class="nav-item" onclick="navTo('insights',this);closeMobileSidebar()"><span class="nav-icon">📊</span> Insights</div>
+  <div class="nav-item" onclick="navTo('settings',this);closeMobileSidebar()"><span class="nav-icon">⚙</span> Settings</div>
+  <div class="sb-community" id="mobile-comm-badge" style="margin:auto 12px 12px">
+    <div class="sb-comm-name" id="mobile-comm-name">Thai ROV Squad</div>
+    <div class="sb-comm-live"><span class="live-dot"></span> LIVE</div>
+  </div>
+</div>
+
+<!-- ═══ CONFIRM MODAL ═══ -->
+<div id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title">ยืนยันการดำเนินการ</div>
+    <div class="modal-body" id="modal-body">คุณแน่ใจหรือไม่?</div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">ยกเลิก</button>
+      <button class="btn btn-danger" id="modal-confirm-btn" onclick="confirmModal()">ยืนยัน</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ LANDING ═══ -->
+<div id="landing" class="show">
+  <nav class="landing-nav">
+    <div class="landing-logo">
+      <div class="landing-logo-icon">🎮</div>
+      <div>
+        <div class="landing-logo-name">GuildOS</div>
+        <div style="font-size:9px;color:var(--mut);letter-spacing:2px;">COMMUNITY OS</div>
+      </div>
+    </div>
+    <button id="hamburger-btn" onclick="toggleMobileNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="landing-nav-btns" id="landing-nav-btns">
+      <button class="btn btn-outline" onclick="showOnboarding()">Try Onboarding</button>
+      <button class="btn btn-primary" onclick="goToLogin()">Open Dashboard</button>
+    </div>
+  </nav>
+  <div class="hero">
+    <div class="hero-badge">✦ AI-powered Community Operating System</div>
+    <h1 class="hero-h1">Run your gaming guild<br><span>on autopilot.</span></h1>
+    <p class="hero-sub">GuildOS turns Facebook Groups and Discord servers into self-managing ecosystems — moderation, matchmaking, and member intelligence, powered by AI.</p>
+    <div class="hero-btns">
+      <button class="btn btn-primary btn-lg" onclick="goToLogin()">🚀 Launch Dashboard</button>
+      <button class="btn btn-outline btn-lg" onclick="showOnboarding()">See Member Onboarding</button>
+    </div>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon" style="background:var(--red-dim)">🛡</div>
+      <div class="feature-title">AI Moderation</div>
+      <div class="feature-desc">Detects spam, toxicity, and ID-selling in Thai automatically. 95% accuracy, 90% less admin work.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:var(--acc-dim)">⚔</div>
+      <div class="feature-title">Smart Matchmaker</div>
+      <div class="feature-desc">Parses casual Thai chat into ranked, balanced teams. Reduce toxic matches by 40%.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:var(--grn-dim)">👥</div>
+      <div class="feature-title">Synthetic Personas</div>
+      <div class="feature-desc">Builds a Skill Card for every member — sponsor-ready audience intelligence.</div>
+    </div>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-name">Starter</div>
+      <div class="price-amount">฿490<span>/mo</span></div>
+      <div class="price-members">5,000–30,000 members</div>
+      <div class="price-feat">✓ AI Moderation</div>
+      <div class="price-feat">✓ Basic Matchmaking</div>
+    </div>
+    <div class="price-card featured">
+      <div class="price-popular">MOST POPULAR</div>
+      <div class="price-name">Pro</div>
+      <div class="price-amount">฿1,490<span>/mo</span></div>
+      <div class="price-members">30,000–150,000 members</div>
+      <div class="price-feat">✓ Full AI Suite</div>
+      <div class="price-feat">✓ Sponsor Reports</div>
+      <div class="price-feat">✓ Advanced Analytics</div>
+    </div>
+    <div class="price-card">
+      <div class="price-name">Enterprise</div>
+      <div class="price-amount">฿2,990+<span>/mo</span></div>
+      <div class="price-members">150,000+ members</div>
+      <div class="price-feat">✓ Custom AI</div>
+      <div class="price-feat">✓ Whitelabel</div>
+      <div class="price-feat">✓ Priority Support</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="login-view">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">🎮</div>
+      <span class="login-logo-name">GuildOS</span>
+      <div class="login-logo-sub">ADMIN PORTAL</div>
+    </div>
+    <div class="demo-hint">
+      <strong>Demo credentials:</strong><br>
+      Email: <strong>admin@guildos.app</strong> | Password: <strong>password123</strong><br>
+      หรือสร้างบัญชีใหม่ด้วย email และรหัสผ่านใดก็ได้
+    </div>
+    <div class="input-group">
+      <label class="input-label">อีเมล</label>
+      <input type="email" id="login-email" class="input-field" placeholder="admin@guildos.app" onkeydown="if(event.key==='Enter')doLogin()">
+      <div class="input-error" id="email-error">กรุณากรอกอีเมลให้ถูกต้อง</div>
+    </div>
+    <div class="input-group">
+      <label class="input-label">รหัสผ่าน</label>
+      <input type="password" id="login-password" class="input-field" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      <div class="input-error" id="pass-error">รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร</div>
+    </div>
+    <div id="login-error" style="background:var(--red-dim);border:1px solid rgba(255,71,87,0.3);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--red);margin-bottom:14px;display:none;"></div>
+    <button class="btn btn-primary btn-full" id="login-btn" onclick="doLogin()">เข้าสู่ระบบ</button>
+    <div class="login-footer">
+      <a onclick="showForgotModal()">ลืมรหัสผ่าน?</a>
+      &nbsp;·&nbsp;
+      <a onclick="showLanding()">← กลับหน้าหลัก</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ COMMUNITY SETUP WIZARD ═══ -->
+<div id="setup-view">
+  <div class="setup-wrap">
+    <div class="setup-header">
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:16px">
+        <div style="width:36px;height:36px;background:var(--acc);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px">🎮</div>
+        <span style="font-family:var(--font-head);font-size:20px;font-weight:700">GuildOS</span>
+      </div>
+      <h1>ตั้งค่าชุมชนของคุณ</h1>
+      <p>ใช้เวลาแค่ 2 นาที พร้อมเริ่มใช้งาน AI ได้ทันที</p>
+    </div>
+
+    <!-- Step Indicator -->
+    <div style="display:flex;align-items:flex-start;justify-content:center;margin-bottom:32px;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div class="step-dot active" id="sdot-1">1</div>
+        <div class="step-label">ข้อมูลกลุ่ม</div>
+      </div>
+      <div style="margin-top:15px"><div class="step-line" id="sline-1"></div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div class="step-dot" id="sdot-2">2</div>
+        <div class="step-label">เชื่อมต่อ</div>
+      </div>
+      <div style="margin-top:15px"><div class="step-line" id="sline-2"></div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div class="step-dot" id="sdot-3">3</div>
+        <div class="step-label">ยืนยัน</div>
+      </div>
+    </div>
+
+    <div class="setup-card">
+      <!-- Step 1 -->
+      <div class="setup-step active" id="step-1">
+        <div class="card-title" style="margin-bottom:20px">ข้อมูลกลุ่มของคุณ</div>
+        <div class="form-row">
+          <label class="form-label">ชื่อกลุ่ม *</label>
+          <input type="text" id="s-group-name" placeholder="เช่น Thai ROV Squad Official">
+        </div>
+        <div class="form-row">
+          <label class="form-label">แพลตฟอร์มหลัก *</label>
+          <select id="s-platform" style="width:100%">
+            <option value="">เลือกแพลตฟอร์ม</option>
+            <option value="Facebook">Facebook Group</option>
+            <option value="Discord">Discord Server</option>
+            <option value="LINE">LINE OpenChat</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">จำนวนสมาชิกปัจจุบัน (โดยประมาณ)</label>
+          <input type="number" id="s-member-count" placeholder="เช่น 50000" min="0">
+        </div>
+        <div class="form-row">
+          <label class="form-label">URL กลุ่ม (ถ้ามี)</label>
+          <input type="text" id="s-group-url" placeholder="https://www.facebook.com/groups/...">
+        </div>
+        <div class="setup-nav">
+          <button class="btn btn-outline btn-sm" onclick="showLanding()">ยกเลิก</button>
+          <button class="btn btn-primary" onclick="setupNext(1)">ถัดไป →</button>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="setup-step" id="step-2">
+        <div class="card-title" style="margin-bottom:6px">เชื่อมต่อ Webhook</div>
+        <p style="font-size:12px;color:var(--sub);margin-bottom:16px">นำ URL นี้ไปตั้งค่าใน Facebook/Discord/LINE เพื่อให้ AI เริ่มทำงาน</p>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="webhook-box" id="webhook-url" style="flex:1"></div>
+          <button class="btn btn-outline btn-sm" onclick="copyWebhook()" style="flex-shrink:0">Copy</button>
+        </div>
+        <div class="platform-instructions">
+          <div class="plat-tab" id="plat-tab">
+            <button class="plat-tab-btn active" onclick="showPlatTab('facebook',this)">Facebook</button>
+            <button class="plat-tab-btn" onclick="showPlatTab('discord',this)">Discord</button>
+            <button class="plat-tab-btn" onclick="showPlatTab('line',this)">LINE</button>
+          </div>
+          <div class="plat-steps" id="plat-steps">
+            1. ไปที่ Facebook Group → Settings → Advanced<br>
+            2. เพิ่ม Webhook URL ในช่อง Webhooks<br>
+            3. เลือก Events: Posts, Comments, Members<br>
+            4. ยืนยันและบันทึก<br>
+            5. กลับมากด "ถัดไป" ด้านล่าง
+          </div>
+        </div>
+        <div class="setup-nav">
+          <button class="btn btn-outline btn-sm" onclick="setupPrev(2)">← ย้อนกลับ</button>
+          <button class="btn btn-primary" onclick="setupNext(2)">ถัดไป →</button>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="setup-step" id="step-3">
+        <div class="card-title" style="margin-bottom:16px">ยืนยันข้อมูล</div>
+        <div id="setup-summary"></div>
+        <div style="background:var(--grn-dim);border:1px solid rgba(0,229,160,0.25);border-radius:var(--r);padding:12px 14px;margin:16px 0;font-size:12px;color:var(--sub);">
+          ✅ AI Moderator จะเริ่มทำงานทันทีหลังการตั้งค่า<br>
+          ✅ คุณจะได้รับแจ้งเตือนเมื่อพบเนื้อหาที่น่าสงสัย<br>
+          ✅ Dashboard จะแสดงข้อมูล Real-time
+        </div>
+        <div class="setup-nav">
+          <button class="btn btn-outline btn-sm" onclick="setupPrev(3)">← ย้อนกลับ</button>
+          <button class="btn btn-primary" id="setup-finish-btn" onclick="finishSetup()">🚀 เริ่มใช้งาน GuildOS</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MEMBER ONBOARDING CHAT ═══ -->
+<div id="onboarding-view">
+  <div style="padding:14px 24px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:30px;height:30px;background:var(--acc);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px">🎮</div>
+      <span style="font-family:var(--font-head);font-size:16px;font-weight:700">GuildOS</span>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="showLanding()">← Back</button>
+  </div>
+  <div class="chat-msgs" id="chat-msgs"></div>
+  <div class="chat-input" id="chat-input-area">
+    <div style="display:flex;gap:10px">
+      <input type="text" id="chat-input" placeholder="พิมพ์คำตอบของคุณ..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="btn btn-primary" style="padding:9px 16px;flex-shrink:0" onclick="sendChat()">➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div id="app" style="display:none;">
+  <div id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon">🎮</div>
+      <div>
+        <div class="sb-logo-name">GuildOS</div>
+        <div class="sb-logo-sub">COMMUNITY OS</div>
+      </div>
+    </div>
+    <div class="sb-section">WORKSPACE</div>
+    <div class="nav-item active" onclick="navTo('overview',this)"><span class="nav-icon">⊞</span> Overview</div>
+    <div class="nav-item" onclick="navTo('moderation',this)"><span class="nav-icon">🛡</span> Moderation</div>
+    <div class="nav-item" onclick="navTo('matchmaking',this)"><span class="nav-icon">⚔</span> Matchmaking</div>
+    <div class="nav-item" onclick="navTo('members',this)"><span class="nav-icon">👥</span> Members</div>
+    <div class="nav-item" onclick="navTo('insights',this)"><span class="nav-icon">📊</span> Insights</div>
+    <div class="nav-item" onclick="navTo('settings',this)"><span class="nav-icon">⚙</span> Settings</div>
+    <div class="sb-community" id="sb-community-badge">
+      <div class="sb-comm-name" id="sb-comm-name">Thai ROV Squad</div>
+      <div class="sb-comm-live"><span class="live-dot"></span> <span id="sb-comm-live-txt">LIVE · 58 members</span></div>
+    </div>
+  </div>
+  <div id="main">
+    <div id="topbar">
+      <button id="sidebar-toggle-btn" onclick="openMobileSidebar()" title="Menu">☰</button>
+      <div class="topbar-live"><span class="live-dot"></span> <span id="topbar-comm-name">Thai ROV Squad</span> · Live</div>
+      <div class="topbar-user">
+        <div class="topbar-avatar" id="topbar-avatar">A</div>
+        <div class="topbar-name" id="topbar-email">admin@guildos.app</div>
+        <button class="btn btn-outline btn-sm" onclick="doLogout()" style="margin-left:8px">ออกจากระบบ</button>
+      </div>
+    </div>
+    <div id="page-area"></div>
+  </div>
+</div>
+
+<div id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="member-drawer"><div id="drawer-content"></div></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// AUTH STATE (localStorage-based mock)
+// ═══════════════════════════════════════════════
+const AUTH = {
+  // Demo accounts (simulate Supabase auth)
+  DEMO_ACCOUNTS: {
+    'admin@guildos.app': { password: 'password123', name: 'Admin Demo' },
+  },
+
+  get user(){ try{return JSON.parse(localStorage.getItem('guildos_user'))||null;}catch{return null;} },
+  get community(){ try{return JSON.parse(localStorage.getItem('guildos_community'))||null;}catch{return null;} },
+
+  login(email, password){
+    // Simulate Supabase Auth — accept demo OR any valid format
+    const demo = this.DEMO_ACCOUNTS[email.toLowerCase()];
+    if(demo && demo.password !== password) return {error:'รหัสผ่านไม่ถูกต้อง'};
+    if(!email.includes('@')) return {error:'รูปแบบอีเมลไม่ถูกต้อง'};
+    if(password.length < 6) return {error:'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'};
+    const user = {
+      id: 'user_'+Math.random().toString(36).slice(2,10),
+      email: email.toLowerCase(),
+      name: demo?.name || email.split('@')[0],
+      created_at: new Date().toISOString()
+    };
+    localStorage.setItem('guildos_user', JSON.stringify(user));
+    return {user};
+  },
+
+  logout(){
+    localStorage.removeItem('guildos_user');
+    // Keep community data for demo purposes
+  },
+
+  saveCommunity(data){
+    localStorage.setItem('guildos_community', JSON.stringify({...data, created_at: new Date().toISOString()}));
+  }
+};
+
+// ═══════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════
+const MEMBERS = [
+  {nick:'ไทย',role:'Mid',persona:'Aggressive Jungler',eng:98.5,game:'ROV',rank:'Conqueror',ps:'aggressive'},
+  {nick:'ต้น',role:'Carry',persona:'Rage Rusher',eng:97.5,game:'MLBB',rank:'Mythic',ps:'aggressive'},
+  {nick:'โอม',role:'Jungle',persona:'Rage Rusher',eng:97.3,game:'ROV',rank:'Conqueror',ps:'aggressive'},
+  {nick:'โอ๊ค',role:'Carry',persona:'Casual Tank',eng:97.2,game:'Valorant',rank:'Diamond',ps:'chill'},
+  {nick:'พุฒ',role:'Support',persona:'Hardcore Carry',eng:88.0,game:'ROV',rank:'Epic',ps:'aggressive'},
+  {nick:'ดิม',role:'Mid',persona:'Mid Diff',eng:87.6,game:'MLBB',rank:'Mythic',ps:'strategic'},
+  {nick:'เก่ง',role:'Mid',persona:'Mid Diff',eng:85.9,game:'Valorant',rank:'Platinum',ps:'strategic'},
+  {nick:'โฟม',role:'Carry',persona:'Hardcore Carry',eng:81.6,game:'ROV',rank:'Epic',ps:'aggressive'},
+  {nick:'เนย',role:'Mid',persona:'Rage Rusher',eng:76.7,game:'PUBG',rank:'Ace',ps:'aggressive'},
+  {nick:'ปั้น',role:'Carry',persona:'Team Mom',eng:75.4,game:'ROV',rank:'Legend',ps:'chill'},
+  {nick:'แม็ก',role:'Support',persona:'Aggressive Jungler',eng:75.1,game:'MLBB',rank:'Epic',ps:'chill'},
+  {nick:'พลัส',role:'Carry',persona:'Strategist',eng:70.4,game:'Valorant',rank:'Gold',ps:'strategic'},
+  {nick:'ดี่',role:'Mid',persona:'Rage Rusher',eng:68.2,game:'ROV',rank:'Epic',ps:'aggressive'},
+  {nick:'ปอนด์',role:'Mid',persona:'Mid Diff',eng:65.0,game:'MLBB',rank:'Legend',ps:'strategic'},
+  {nick:'เบนซ์',role:'Mid',persona:'Mid Diff',eng:62.3,game:'ROV',rank:'Conqueror',ps:'strategic'},
+  {nick:'ปาล์ม',role:'Carry',persona:'Hardcore Carry',eng:60.1,game:'ROV',rank:'Epic',ps:'aggressive'},
+  {nick:'มิ้นท์',role:'Support',persona:'Chill Support',eng:58.8,game:'MLBB',rank:'Legend',ps:'chill'},
+  {nick:'โอ๋',role:'Support',persona:'Team Mom',eng:55.2,game:'ROV',rank:'Epic',ps:'chill'},
+  {nick:'โรเจอร์',role:'Support',persona:'Chill Support',eng:51.0,game:'Valorant',rank:'Silver',ps:'chill'},
+  {nick:'กัน',role:'Mid',persona:'Strategist',eng:48.7,game:'ROV',rank:'Legend',ps:'strategic'},
+];
+let POSTS = [
+  {id:1,author:'ขายไอดี',content:'ขายไอดี ROV แรงค์ Conqueror ราคาถูก ทักไลน์ @sellid999',platform:'Facebook',score:0.97,status:'removed',cat:'spam_id_selling',ts:'14:32'},
+  {id:2,author:'โกง',content:'ใครซื้อเพชรราคาถูก inbox มาเลย ส่งไว 100%',platform:'Facebook',score:0.94,status:'removed',cat:'spam_topup',ts:'14:28'},
+  {id:3,author:'toxic1',content:'เล่นห่วยมาก ออกจากทีมไปเลยไอ้ควาย',platform:'Discord',score:0.91,status:'removed',cat:'toxic',ts:'13:55'},
+  {id:4,author:'โอ๋',content:'หาคนดึงค์คืนนี้ครับ ใครว่าง?',platform:'Facebook',score:0.12,status:'approved'},
+  {id:5,author:'แบงค์',content:'ใครว่างมา ARAM ไหมครับ',platform:'Discord',score:0.08,status:'approved'},
+  {id:6,author:'spam2',content:'รับเติมเกมราคาถูก line: @top9 ทุกเกมครับ',platform:'Facebook',score:0.88,status:'removed'},
+  {id:7,author:'ปอนด์',content:'ขอทีมหน่อย support main คืนนี้',platform:'Discord',score:0.05,status:'approved'},
+  {id:8,author:'harass1',content:'ผู้หญิงเล่นเกมก็แค่นี้ ออกได้เลย',platform:'Facebook',score:0.95,status:'removed'},
+  {id:9,author:'สมชาย',content:'หาตี้ ROV สายซัพ 3 ทุ่มนะครับ',platform:'Facebook',score:0.04,status:'approved'},
+  {id:10,author:'สแปม3',content:'ขาย ID MLBB Mythic 5500 THB line: @mlbbsell',platform:'Discord',score:0.96,status:'removed'},
+];
+let REQUESTS = [
+  {id:1,nick:'ไทย',text:'หาตี้ ROV 3 ทุ่ม ขอสายซัพพอร์ต',game:'ROV',role:'Support',time:'21:00',status:'pending'},
+  {id:2,nick:'ต้น',text:'ใครว่าง MLBB คืนนี้ สาย mid ครับ',game:'MLBB',role:'Mid',time:'22:00',status:'pending'},
+];
+let TEAMS = [
+  {game:'PUBG Mobile',time:'21:00',members:['แบงค์','กิม'],styles:['Rage Rusher','Mid Diff']},
+  {game:'LoL Wild Rift',time:'19:30',members:['เอ๋รัช','กัน'],styles:['Casual Tank','Strategist']},
+  {game:'Valorant',time:'22:00',members:['เจมส์','ดิม','โฟม'],styles:['Hardcore Carry','Mid Diff','Hardcore Carry']},
+  {game:'ROV',time:'21:00',members:['มิ้นท์','โอ๋','โรเจอร์','ปาล์ม'],styles:['Chill Support','Team Mom','Chill Support','Hardcore Carry']},
+];
+const PERSONA_COLORS = {
+  'Hardcore Carry':'#FF4757','Chill Support':'#00E5A0','Aggressive Jungler':'#FFA502',
+  'Rage Rusher':'#ff6b6b','Mid Diff':'#7C5CFC','Team Mom':'#2ed573','Strategist':'#38B6FF','Casual Tank':'#A29BFE'
+};
+let S = {
+  plan:'starter',thres:0.85,autoRemove:true,
+  platforms:{facebook:true,discord:true,line:false},
+  pfFilter:'all',stFilter:'all',dateFilter:'today',
+  runningMatch:false,analyzing:false,settingsTab:'ai',
+  mmRules:{rovSize:5,mlbbSize:5,valorantSize:5,pubgSize:4,timeWindow:60,rankGap:'any'},
+  notifs:{spamSpike:true,teamFormed:false,memberMilestone:true},
+  modLogOpen:false,histOpen:false,mmRulesOpen:false,
+  selectedPosts:new Set(),postPage:1,
+};
+let setupData = {groupName:'',platform:'',memberCount:'',groupUrl:'',webhookUrl:''};
+let modalCallback = null;
+
+// ═══════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════
+function toast(msg, type='info', duration=3000){
+  const icons = {success:'✅',error:'❌',info:'ℹ️'};
+  const t = document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<span>${icons[type]}</span><span>${msg}</span>`;
+  const container = document.getElementById('toast-container');
+  container.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(20px)';t.style.transition='all 0.2s';setTimeout(()=>t.remove(),200);},duration);
+}
+
+// ═══════════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════════
+function showModal(title, body, confirmText, cb, danger=true){
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').textContent = body;
+  const btn = document.getElementById('modal-confirm-btn');
+  btn.textContent = confirmText;
+  btn.className = danger?'btn btn-danger':'btn btn-primary';
+  modalCallback = cb;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal(){ document.getElementById('modal-overlay').classList.remove('show'); modalCallback=null; }
+function confirmModal(){ if(modalCallback)modalCallback(); closeModal(); }
+
+// ═══════════════════════════════════════════════
+// VIEW NAV
+// ═══════════════════════════════════════════════
+function hideAll(){
+  document.getElementById('landing').classList.remove('show');
+  document.getElementById('login-view').classList.remove('show');
+  document.getElementById('setup-view').classList.remove('show');
+  document.getElementById('onboarding-view').classList.remove('show');
+  document.getElementById('app').style.display='none';
+  document.getElementById('not-found').classList.remove('show');
+}
+function showLanding(){ hideAll(); document.getElementById('landing').classList.add('show'); }
+function goToLogin(){
+  const u = AUTH.user;
+  if(u){ enterDashboard(); return; } // already logged in
+  hideAll();
+  document.getElementById('login-view').classList.add('show');
+  setTimeout(()=>document.getElementById('login-email').focus(),100);
+}
+function showOnboarding(){ hideAll(); document.getElementById('onboarding-view').classList.add('show'); initChat(); }
+function showSetup(){ hideAll(); document.getElementById('setup-view').classList.add('show'); }
+function enterDashboard(){
+  const u = AUTH.user;
+  const c = AUTH.community;
+  hideAll();
+  document.getElementById('app').style.display='flex';
+  // Update topbar
+  if(u){
+    document.getElementById('topbar-avatar').textContent = u.name?.charAt(0).toUpperCase()||'A';
+    document.getElementById('topbar-email').textContent = u.email;
+  }
+  if(c){
+    document.getElementById('topbar-comm-name').textContent = c.groupName||'My Community';
+    document.getElementById('sb-comm-name').textContent = c.groupName||'My Community';
+    document.getElementById('sb-comm-live-txt').textContent = `LIVE · ${c.memberCount||58} members`;
+    const mn=document.getElementById('mobile-comm-name');if(mn)mn.textContent=c.groupName||'My Community';
+  }
+  navTo('overview', document.querySelector('.nav-item'));
+}
+
+// ═══════════════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════════════
+function doLogin(){
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value;
+  const errDiv = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
+  errDiv.style.display='none';
+
+  // Validate
+  if(!email || !email.includes('@')){
+    document.getElementById('login-email').classList.add('error');
+    document.getElementById('email-error').classList.add('show');
+    return;
+  }
+  document.getElementById('login-email').classList.remove('error');
+  document.getElementById('email-error').classList.remove('show');
+
+  if(pass.length < 6){
+    document.getElementById('login-password').classList.add('error');
+    document.getElementById('pass-error').classList.add('show');
+    return;
+  }
+  document.getElementById('login-password').classList.remove('error');
+  document.getElementById('pass-error').classList.remove('show');
+
+  btn.textContent='กำลังเข้าสู่ระบบ…';btn.disabled=true;
+
+  // Simulate API delay
+  setTimeout(()=>{
+    const result = AUTH.login(email, pass);
+    btn.textContent='เข้าสู่ระบบ';btn.disabled=false;
+    if(result.error){
+      errDiv.textContent=result.error;errDiv.style.display='block';
+      return;
+    }
+    toast('ยินดีต้อนรับสู่ GuildOS! 🎮','success');
+    // Check if community is set up
+    if(AUTH.community){ enterDashboard(); }
+    else { showSetup(); }
+  }, 800);
+}
+
+function doLogout(){
+  showModal('ออกจากระบบ','คุณต้องการออกจากระบบใช่ไหม?','ออกจากระบบ',()=>{
+    AUTH.logout();
+    toast('ออกจากระบบแล้ว','info');
+    showLanding();
+  },false);
+}
+
+function showForgotModal(){
+  toast('📧 ฟีเจอร์นี้จะเปิดใช้งานเมื่อเชื่อมต่อกับ Supabase Auth จริงครับ','info',4000);
+}
+
+// ═══════════════════════════════════════════════
+// COMMUNITY SETUP WIZARD
+// ═══════════════════════════════════════════════
+const PLAT_INSTRUCTIONS = {
+  facebook:`1. ไปที่ Facebook Group → Settings → Advanced<br>2. เพิ่ม Webhook URL ในช่อง Webhooks<br>3. เลือก Events: Posts, Comments, Members<br>4. ยืนยันและบันทึก`,
+  discord:`1. ไปที่ Server Settings → Integrations → Webhooks<br>2. สร้าง Webhook ใหม่<br>3. วาง URL ด้านบนในช่อง URL<br>4. เลือก Channel และบันทึก`,
+  line:`1. ไปที่ LINE Developers Console<br>2. สร้าง Messaging API Channel<br>3. วาง URL ด้านบนใน Webhook URL<br>4. เปิด Use Webhook และปิด Auto-reply`
+};
+
+function showPlatTab(plat, el){
+  document.querySelectorAll('.plat-tab-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('plat-steps').innerHTML = PLAT_INSTRUCTIONS[plat];
+}
+
+function setupNext(step){
+  if(step===1){
+    const name = document.getElementById('s-group-name').value.trim();
+    const plat = document.getElementById('s-platform').value;
+    if(!name){ toast('กรุณากรอกชื่อกลุ่ม','error'); return; }
+    if(!plat){ toast('กรุณาเลือกแพลตฟอร์ม','error'); return; }
+    setupData.groupName = name;
+    setupData.platform = plat;
+    setupData.memberCount = document.getElementById('s-member-count').value||'0';
+    setupData.groupUrl = document.getElementById('s-group-url').value;
+    setupData.webhookUrl = `https://api.guildos.app/wh/${plat.toLowerCase()}/${Math.random().toString(36).slice(2,10)}`;
+    document.getElementById('webhook-url').textContent = setupData.webhookUrl;
+    goToSetupStep(2);
+  } else if(step===2){
+    // Build summary
+    const rows = [
+      ['ชื่อกลุ่ม', setupData.groupName],
+      ['แพลตฟอร์ม', setupData.platform],
+      ['จำนวนสมาชิก', setupData.memberCount ? Number(setupData.memberCount).toLocaleString()+' คน' : 'ไม่ระบุ'],
+      ['Webhook URL', setupData.webhookUrl.slice(0,40)+'…'],
+    ];
+    document.getElementById('setup-summary').innerHTML = rows.map(([l,v])=>`
+    <div class="summary-row">
+      <span style="color:var(--sub)">${l}</span>
+      <strong style="font-size:12px">${v}</strong>
+    </div>`).join('');
+    goToSetupStep(3);
+  }
+}
+
+function setupPrev(step){
+  goToSetupStep(step===2?1:2);
+}
+
+function goToSetupStep(n){
+  [1,2,3].forEach(i=>{
+    const step = document.getElementById(`step-${i}`);
+    const dot = document.getElementById(`sdot-${i}`);
+    if(step) step.className = 'setup-step'+(i===n?' active':'');
+    if(dot){
+      dot.className = 'step-dot';
+      if(i<n) dot.classList.add('done');
+      else if(i===n) dot.classList.add('active');
+    }
+    if(i<3){
+      const line = document.getElementById(`sline-${i}`);
+      if(line) line.className='step-line'+(i<n?' done':'');
+    }
+  });
+}
+
+function finishSetup(){
+  const btn = document.getElementById('setup-finish-btn');
+  btn.textContent='กำลังบันทึก…';btn.disabled=true;
+  setTimeout(()=>{
+    AUTH.saveCommunity(setupData);
+    toast('🎉 ตั้งค่าชุมชนเรียบร้อยแล้ว!','success');
+    enterDashboard();
+  },1000);
+}
+
+function copyWebhook(){
+  const url = document.getElementById('webhook-url').textContent;
+  navigator.clipboard.writeText(url).then(()=>toast('คัดลอก Webhook URL แล้ว','success')).catch(()=>{
+    // Fallback
+    const t = document.createElement('textarea');
+    t.value=url; document.body.appendChild(t); t.select();
+    document.execCommand('copy'); document.body.removeChild(t);
+    toast('คัดลอก Webhook URL แล้ว','success');
+  });
+}
+
+// ═══════════════════════════════════════════════
+// DASHBOARD NAV
+// ═══════════════════════════════════════════════
+function navTo(page, el){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  renderPage(page);
+}
+
+function renderPage(page){
+  const area = document.getElementById('page-area');
+  if(!area)return;
+  // Show skeleton briefly for heavy pages
+  if(['insights','moderation'].includes(page)){
+    area.innerHTML=renderPageSkeleton();
+    setTimeout(()=>_renderPageContent(page,area),80);
+  } else {
+    _renderPageContent(page,area);
+  }
+}
+function _renderPageContent(page,area){
+  try{
+    area.innerHTML='';
+    if(page==='overview') area.innerHTML = withErrorBoundary(buildOverview,'overview');
+    else if(page==='moderation'){area.innerHTML=withErrorBoundary(buildModeration,'moderation');initModeration();}
+    else if(page==='matchmaking'){area.innerHTML=withErrorBoundary(buildMatchmaking,'matchmaking');initMatchmaking();}
+    else if(page==='members'){area.innerHTML=withErrorBoundary(buildMembers,'members');initMembers();}
+    else if(page==='insights'){area.innerHTML=withErrorBoundary(buildInsights,'insights');initInsights();}
+    else if(page==='settings'){area.innerHTML=withErrorBoundary(buildSettings,'settings');initSettings();}
+    else show404();
+  }catch(e){
+    console.error('renderPage error:',e);
+    area.innerHTML=`<div class="error-boundary"><div class="error-boundary-icon">⚠️</div><div class="error-boundary-title">เกิดข้อผิดพลาด</div><div class="error-boundary-msg">${e.message}</div><button class="btn btn-primary" onclick="renderPage('${page}')">🔄 ลองใหม่</button></div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+function badge(txt, color, bg){
+  return `<span class="badge" style="background:${bg||color+'22'};color:${color};border:1px solid ${color}44">${txt}</span>`;
+}
+function scoreColor(s){return s>=0.85?'#FF4757':s>=0.5?'#FFA502':'#00E5A0';}
+function metricCard(label,value,sub,icon,color){
+  return `<div class="metric-card">
+    <div class="metric-icon" style="background:${color}18">${icon}</div>
+    <div class="metric-label">${label}</div>
+    <div class="metric-value" style="color:${color}">${value}</div>
+    ${sub?`<div class="metric-sub">${sub}</div>`:''}
+  </div>`;
+}
+function skeleton(h='18px',w='100%',mb='8px'){
+  return `<div class="skeleton" style="height:${h};width:${w};margin-bottom:${mb}"></div>`;
+}
+
+// ═══════════════════════════════════════════════
+// OVERVIEW
+// ═══════════════════════════════════════════════
+function buildOverview(){
+  const comm = AUTH.community;
+  const feed=[
+    ['Member','New member joined: ภูผา','2m ago','#00E5A0'],
+    ['Member','New member joined: สายฟ้า','5m ago','#00E5A0'],
+    ['Match','Team formed for ROV · 21:00','12m ago','#7C5CFC'],
+    ['Spam','Post auto-removed · score 0.97','18m ago','#FF4757'],
+    ['Match','Team formed for MLBB · 22:00','25m ago','#7C5CFC'],
+    ['Spam','Post auto-removed · score 0.91','45m ago','#FF4757'],
+    ['Match','Team formed for Valorant · 23:00','1h ago','#7C5CFC'],
+  ];
+  return `
+  <div class="page-hdr"><h1>Overview</h1><p>Real-time pulse of your community.</p></div>
+  <div class="metrics-row" style="grid-template-columns:repeat(4,1fr)">
+    ${metricCard('Active Members', comm?.memberCount ? Number(comm.memberCount).toLocaleString() : '58','↑ 4 this week','👥','#00E5A0')}
+    ${metricCard('Posts Today','24','across platforms','💬','#7C5CFC')}
+    ${metricCard('Spam Blocked','7','auto-moderated today','🛡','#FF4757')}
+    ${metricCard('Matches Made','5','teams formed today','⚔','#FFA502')}
+  </div>
+  <div class="card">
+    <div class="card-title"><span style="color:var(--acc)">⚡</span> Live Activity Feed <span style="width:7px;height:7px;border-radius:50%;background:var(--grn);box-shadow:0 0 6px var(--grn);display:inline-block;margin-left:4px"></span></div>
+    ${feed.map(([type,msg,time,col])=>`
+    <div class="feed-item">
+      ${badge(type,col)}
+      <span style="flex:1;font-size:13px">${msg}</span>
+      <span style="font-size:10px;color:var(--mut)">${time}</span>
+    </div>`).join('')}
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════
+// MODERATION
+// ═══════════════════════════════════════════════
+let MOD_LOG = [
+  {action:'removed',author:'ขายไอดี',score:0.97,by:'AI Auto',time:'14:32'},
+  {action:'approved',author:'โอ๋',score:0.12,by:'Admin',time:'14:28'},
+  {action:'removed',author:'toxic1',score:0.91,by:'AI Auto',time:'13:55'},
+  {action:'removed',author:'spam2',score:0.88,by:'Admin',time:'13:20'},
+  {action:'approved',author:'ปอนด์',score:0.05,by:'Admin',time:'12:47'},
+];
+
+function buildModeration(){
+  const removed=POSTS.filter(p=>p.status==='removed').length;
+  const autoRem=POSTS.filter(p=>p.status==='removed'&&p.score>=S.thres).length;
+  const pending=POSTS.filter(p=>p.status==='pending').length;
+  const thresPct=((S.thres-0.5)/0.5*100).toFixed(0);
+  return `
+  <div class="page-hdr"><h1>AI Moderation</h1><p>AI-flagged content across all connected platforms.</p></div>
+
+  <!-- Stats -->
+  <div class="metrics-row" style="grid-template-columns:repeat(3,1fr)">
+    ${metricCard('Flagged Today',removed,'','⏰','#FFA502')}
+    ${metricCard('Auto-removed',autoRem,`score ≥ ${S.thres.toFixed(2)}`,'🛡','#FF4757')}
+    ${metricCard('Pending Review',pending,'รอการตรวจสอบ','🔵','#7C5CFC')}
+  </div>
+
+  <!-- Moderation Settings -->
+  <div class="card">
+    <div class="card-title">⚙ ตั้งค่า AI Moderator</div>
+    <div style="margin-bottom:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="font-size:14px">Confidence Threshold</span>
+        <span id="thres-display" style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:${S.thres>=0.85?'#FF4757':S.thres>=0.5?'#FFA502':'#00E5A0'}">${S.thres.toFixed(2)}</span>
+      </div>
+      <div class="gradient-slider-wrap">
+        <div class="gradient-track"></div>
+        <div class="threshold-marker" id="thres-marker" style="left:calc(${thresPct}% - 1px)"></div>
+      </div>
+      <input type="range" id="mod-thres" min="50" max="100" value="${Math.round(S.thres*100)}"
+        oninput="updateThresDisplay(this.value)" style="margin-top:-2px">
+      <div style="font-size:11px;color:var(--mut);margin-top:6px">
+        โพสต์ที่ได้คะแนนเกิน <strong id="thres-hint" style="color:var(--acc)">${S.thres.toFixed(2)}</strong> จะถูกลบอัตโนมัติ
+        &nbsp;·&nbsp; <span style="color:#00E5A0">0.0–0.49 = Safe</span> &nbsp;·&nbsp; <span style="color:#FFA502">0.50–0.84 = Review</span> &nbsp;·&nbsp; <span style="color:#FF4757">0.85+ = Auto-remove</span>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;background:var(--surf2);border-radius:var(--r);padding:13px 16px;margin-bottom:16px">
+      <div>
+        <div style="font-weight:600;font-size:13px">Auto-remove high-confidence spam</div>
+        <div style="font-size:11px;color:var(--sub);margin-top:2px">เมื่อเปิดใช้ โพสต์ที่มีคะแนนเกิน threshold จะถูกลบทันที</div>
+      </div>
+      <button class="toggle" id="autoremove-toggle" onclick="S.autoRemove=!S.autoRemove;updateAutoRemoveToggle()" style="background:${S.autoRemove?'var(--acc)':'var(--bdr)'}">
+        <div class="toggle-knob" style="left:${S.autoRemove?22:3}px"></div>
+      </button>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <div class="card" style="flex:1;margin:0;padding:14px 16px">
+        <div class="card-title" style="margin-bottom:10px;font-size:13px">🤖 ทดสอบ AI Moderator (Real Claude AI)</div>
+        <div style="display:flex;gap:10px">
+          <input type="text" id="analyze-inp" placeholder="พิมพ์โพสต์ทดสอบ เช่น 'ขายไอดี ROV แรงค์ Conqueror line: @xxx'" style="flex:1">
+          <button class="btn btn-primary" id="analyze-btn" style="flex-shrink:0;min-width:100px" onclick="analyzePost()">Analyze</button>
+        </div>
+        <div id="analyze-result" style="margin-top:8px"></div>
+      </div>
+      <button class="btn btn-primary" onclick="saveModerationSettings()" style="height:fit-content;padding:11px 24px;flex-shrink:0">บันทึก</button>
+    </div>
+  </div>
+
+  <!-- Filters + Table -->
+  <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap">
+    <select id="pf-filter" onchange="S.pfFilter=this.value;S.postPage=1;renderPostTable()">
+      <option value="all">All platforms</option><option value="Facebook">Facebook</option><option value="Discord">Discord</option><option value="LINE">LINE</option>
+    </select>
+    <select id="st-filter" onchange="S.stFilter=this.value;S.postPage=1;renderPostTable()">
+      <option value="all">All statuses</option><option value="removed">Removed</option><option value="approved">Approved</option><option value="pending">Pending</option>
+    </select>
+    <select id="date-filter" onchange="S.dateFilter=this.value;renderPostTable()">
+      <option value="today">Today</option><option value="week">This Week</option><option value="all">All Time</option>
+    </select>
+    <div style="flex:1"></div>
+    <span id="selected-count" style="font-size:11px;color:var(--mut)"></span>
+    <button class="btn btn-green" id="bulk-approve-btn" style="display:none" onclick="bulkAction('approved')">✓ Approve Selected</button>
+    <button class="btn btn-red" id="bulk-remove-btn" style="display:none" onclick="bulkAction('removed')">✕ Remove Selected</button>
+    <button class="btn btn-green" onclick="showModal('Approve All','อนุมัติโพสต์ทั้งหมดที่แสดงอยู่?','อนุมัติทั้งหมด',()=>{POSTS=POSTS.map(p=>({...p,status:'approved'}));S.selectedPosts=new Set();renderPostTable();toast('อนุมัติโพสต์ทั้งหมดแล้ว','success');},false)">✓ Approve All</button>
+    <button class="btn btn-red" onclick="showModal('Remove All','ลบโพสต์ทั้งหมดที่แสดงอยู่?','ลบทั้งหมด',()=>{POSTS=POSTS.map(p=>({...p,status:'removed'}));S.selectedPosts=new Set();renderPostTable();toast('ลบโพสต์ทั้งหมดแล้ว','success');})">✕ Remove All</button>
+  </div>
+
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="table-wrap"><table>
+      <thead><tr>
+        <th><input type="checkbox" class="row-checkbox" id="check-all" onchange="toggleAllPosts(this.checked)"></th>
+        <th>Author</th><th>Content</th><th>Platform</th><th>Score</th><th>Category</th><th>Status</th><th>Time</th><th>Actions</th>
+      </tr></thead>
+      <tbody id="posts-tbody"></tbody>
+    </table></div>
+    <div id="posts-pagination" style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-top:1px solid var(--bdr);font-size:12px;color:var(--sub)"></div>
+  </div>
+
+  <!-- Moderation Log (collapsible) -->
+  <div class="card" style="margin-top:4px">
+    <div class="collapsible-header" onclick="S.modLogOpen=!S.modLogOpen;toggleCollapse('mod-log-body','mod-log-icon')">
+      <div class="card-title" style="margin:0">📋 Moderation Log</div>
+      <span class="collapse-icon ${S.modLogOpen?'open':''}" id="mod-log-icon">▼</span>
+    </div>
+    <div class="collapsible-body" id="mod-log-body" style="max-height:${S.modLogOpen?'400px':'0px'}">
+      <div style="margin-top:16px">
+        ${MOD_LOG.map(l=>`
+        <div class="mod-log-item">
+          <div class="log-dot" style="background:${l.action==='removed'?'#FF4757':'#00E5A0'}"></div>
+          <div style="flex:1">
+            <span style="font-size:12px;font-weight:600">${l.action==='removed'?'Removed':'Approved'}</span>
+            <span style="font-size:12px;color:var(--sub)"> — <strong>${l.author}</strong> (score: <span style="color:${scoreColor(l.score)};font-family:var(--font-mono)">${l.score}</span>)</span>
+            <div style="font-size:10px;color:var(--mut);margin-top:2px">By ${l.by}</div>
+          </div>
+          <span class="log-time">${l.time}</span>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function updateThresDisplay(val){
+  S.thres=val/100;
+  const disp=document.getElementById('thres-display');
+  const hint=document.getElementById('thres-hint');
+  const marker=document.getElementById('thres-marker');
+  const pct=((S.thres-0.5)/0.5*100).toFixed(0);
+  if(disp){disp.textContent=S.thres.toFixed(2);disp.style.color=S.thres>=0.85?'#FF4757':S.thres>=0.5?'#FFA502':'#00E5A0';}
+  if(hint)hint.textContent=S.thres.toFixed(2);
+  if(marker)marker.style.left=`calc(${pct}% - 1px)`;
+}
+function updateAutoRemoveToggle(){
+  const btn=document.getElementById('autoremove-toggle');if(!btn)return;
+  btn.style.background=S.autoRemove?'var(--acc)':'var(--bdr)';
+  btn.querySelector('.toggle-knob').style.left=S.autoRemove?'22px':'3px';
+}
+function saveModerationSettings(){
+  toast('✅ บันทึกการตั้งค่า Moderation เรียบร้อย','success');
+}
+function toggleCollapse(bodyId,iconId){
+  const body=document.getElementById(bodyId),icon=document.getElementById(iconId);if(!body)return;
+  const isOpen=body.style.maxHeight!=='0px'&&body.style.maxHeight!=='';
+  body.style.maxHeight=isOpen?'0px':'600px';
+  if(icon)icon.classList.toggle('open',!isOpen);
+}
+function toggleAllPosts(checked){
+  const filtered=getFilteredPosts();
+  const page=paginatePosts(filtered);
+  if(checked)page.forEach(p=>S.selectedPosts.add(p.id));
+  else page.forEach(p=>S.selectedPosts.delete(p.id));
+  renderPostTable();
+}
+function getFilteredPosts(){
+  return POSTS.filter(p=>(S.pfFilter==='all'||p.platform===S.pfFilter)&&(S.stFilter==='all'||p.status===S.stFilter));
+}
+function paginatePosts(filtered){
+  const perPage=20;const start=(S.postPage-1)*perPage;return filtered.slice(start,start+perPage);
+}
+function bulkAction(status){
+  const ids=[...S.selectedPosts];
+  POSTS=POSTS.map(p=>ids.includes(p.id)?{...p,status}:p);
+  S.selectedPosts=new Set();
+  renderPostTable();
+  toast(status==='approved'?`อนุมัติ ${ids.length} โพสต์แล้ว`:`ลบ ${ids.length} โพสต์แล้ว`,status==='approved'?'success':'info');
+}
+function initModeration(){
+  document.getElementById('pf-filter').value=S.pfFilter;
+  document.getElementById('st-filter').value=S.stFilter;
+  renderPostTable();
+}
+function renderPostTable(){
+  const tbody=document.getElementById('posts-tbody');if(!tbody)return;
+  const filtered=getFilteredPosts();
+  const perPage=20;const total=filtered.length;const totalPages=Math.ceil(total/perPage)||1;
+  if(S.postPage>totalPages)S.postPage=1;
+  const page=paginatePosts(filtered);
+  // Update bulk buttons
+  const selCount=S.selectedPosts.size;
+  const sc=document.getElementById('selected-count');
+  const ba=document.getElementById('bulk-approve-btn');
+  const br=document.getElementById('bulk-remove-btn');
+  if(sc)sc.textContent=selCount>0?`เลือก ${selCount} รายการ`:'';
+  if(ba)ba.style.display=selCount>0?'':'none';
+  if(br)br.style.display=selCount>0?'':'none';
+  const allChecked=document.getElementById('check-all');
+  if(allChecked)allChecked.checked=page.length>0&&page.every(p=>S.selectedPosts.has(p.id));
+  if(page.length===0){tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--mut)"><div style="font-size:24px;margin-bottom:8px">🎉</div>ไม่มีโพสต์ที่ต้องตรวจสอบวันนี้</td></tr>`;
+    const pg=document.getElementById('posts-pagination');if(pg)pg.innerHTML='';return;}
+  const catColor={'spam_id_selling':'#FF4757','spam_topup':'#FFA502','toxic':'#ff6b6b','harassment':'#FF4757','clean':'#00E5A0'};
+  tbody.innerHTML=page.map(p=>`<tr class="${S.selectedPosts.has(p.id)?'':''}">
+    <td><input type="checkbox" class="row-checkbox" ${S.selectedPosts.has(p.id)?'checked':''} onchange="togglePostSelect(${p.id},this.checked)"></td>
+    <td style="font-weight:700;white-space:nowrap">${p.author}</td>
+    <td style="color:var(--sub);max-width:180px;font-size:11px;cursor:pointer" onclick="expandContent(this,'${p.content.replace(/'/g,'&apos;')}')"
+      title="คลิกเพื่อดูเนื้อหาเต็ม">${p.content.substring(0,55)}${p.content.length>55?'<span style="color:var(--acc)"> …more</span>':''}</td>
+    <td>${badge(p.platform,p.platform==='Facebook'?'#4499ff':'#8899ff')}</td>
+    <td style="font-weight:700;font-family:var(--font-mono);color:${scoreColor(p.score)}">${p.score.toFixed(2)}</td>
+    <td><span style="font-size:10px;color:${catColor[p.cat||'clean']||'var(--sub)'}">${p.cat||'—'}</span></td>
+    <td>${p.score>=S.thres&&p.status==='removed'?badge('Auto-removed','#FF4757'):p.status==='removed'?badge('Removed','#FF4757'):p.status==='approved'?badge('Approved','#00E5A0'):badge('Pending','#FFA502')}</td>
+    <td style="font-size:10px;color:var(--mut);white-space:nowrap">${p.ts||'Today'}</td>
+    <td style="white-space:nowrap">
+      ${p.status!=='approved'?`<button class="btn btn-green" onclick="updatePost(${p.id},'approved')">✓</button> `:''}
+      ${p.status!=='removed'?`<button class="btn btn-red" onclick="updatePost(${p.id},'removed')">✕</button>`:''}
+    </td>
+  </tr>`).join('');
+  // Pagination
+  const pg=document.getElementById('posts-pagination');
+  if(pg)pg.innerHTML=`<span>${(S.postPage-1)*perPage+1}–${Math.min(S.postPage*perPage,total)} จาก ${total} รายการ</span>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-outline btn-sm" ${S.postPage<=1?'disabled':''} onclick="S.postPage--;renderPostTable()">← Prev</button>
+      <span style="padding:6px 12px;font-size:12px">${S.postPage}/${totalPages}</span>
+      <button class="btn btn-outline btn-sm" ${S.postPage>=totalPages?'disabled':''} onclick="S.postPage++;renderPostTable()">Next →</button>
+    </div>`;
+}
+function togglePostSelect(id,checked){
+  if(checked)S.selectedPosts.add(id);else S.selectedPosts.delete(id);
+  renderPostTable();
+}
+function expandContent(el,full){
+  el.textContent=full;el.style.maxWidth='none';el.style.cursor='default';
+}
+function updatePost(id,status){
+  POSTS=POSTS.map(p=>p.id===id?{...p,status}:p);
+  MOD_LOG.unshift({action:status,author:POSTS.find(p=>p.id===id)?.author||'Unknown',score:POSTS.find(p=>p.id===id)?.score||0,by:'Admin',time:new Date().toLocaleTimeString('th',{hour:'2-digit',minute:'2-digit'})});
+  renderPostTable();
+  toast(status==='approved'?'อนุมัติโพสต์แล้ว':'ลบโพสต์แล้ว',status==='approved'?'success':'info');
+}
+async function analyzePost(){
+  const inp=document.getElementById('analyze-inp'),btn=document.getElementById('analyze-btn'),res=document.getElementById('analyze-result');
+  const txt=inp?.value?.trim();if(!txt||S.analyzing)return;
+  S.analyzing=true;btn.textContent='Analyzing…';btn.disabled=true;res.innerHTML='';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,
+        system:`คุณคือ GuildOS AI Moderator วิเคราะห์โพสต์ชุมชนเกมไทย ตอบ JSON เท่านั้น: {"score":0.0-1.0,"category":"spam_id_selling|spam_topup|toxic|harassment|clean","reason":"อธิบายสั้นๆ"}`,
+        messages:[{role:'user',content:`วิเคราะห์: "${txt}"`}]})});
+    const d=await r.json();const parsed=JSON.parse(d.content[0].text.replace(/```json|```/g,'').trim());
+    const sc=parsed.score;
+    res.innerHTML=`<div style="background:var(--surf2);border-radius:8px;padding:10px 14px;display:flex;gap:14px;flex-wrap:wrap;font-size:12px;margin-top:4px">
+      <span>Score: <strong style="color:${scoreColor(sc)};font-family:var(--font-mono)">${sc.toFixed(2)}</strong></span>
+      <span>Category: <strong style="color:var(--acc)">${parsed.category}</strong></span>
+      <span style="color:var(--sub)">${parsed.reason}</span>
+      <span style="font-weight:700;color:${sc>=S.thres?'#FF4757':'#00E5A0'}">${sc>=S.thres?'→ AUTO-REMOVED':'→ Safe'}</span>
+    </div>`;
+    if(sc>=S.thres){
+      const newPost={id:Date.now(),author:'Test',content:txt,platform:'Facebook',score:sc,status:'removed',cat:parsed.category,ts:'Just now'};
+      POSTS.unshift(newPost);renderPostTable();
+    }
+  }catch(e){res.innerHTML=`<span style="color:var(--red);font-size:11px">Error: ${e.message}</span>`;}
+  S.analyzing=false;btn.textContent='Analyze';btn.disabled=false;if(inp)inp.value='';
+}
+
+
+// MATCHMAKING
+// ═══════════════════════════════════════════════
+let MATCH_HISTORY = [
+  {date:'14 พ.ค.',game:'ROV',players:4,time:'21:00',outcome:'สำเร็จ'},
+  {date:'13 พ.ค.',game:'MLBB',players:5,time:'20:00',outcome:'สำเร็จ'},
+  {date:'13 พ.ค.',game:'Valorant',players:5,time:'22:00',outcome:'ยกเลิก'},
+  {date:'12 พ.ค.',game:'PUBG Mobile',players:4,time:'21:30',outcome:'สำเร็จ'},
+  {date:'12 พ.ค.',game:'LoL Wild Rift',players:5,time:'19:00',outcome:'สำเร็จ'},
+];
+
+function buildMatchmaking(){
+  const pending=REQUESTS.filter(r=>r.status!=='matched');
+  return `
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:12px;flex-wrap:wrap">
+    <div class="page-hdr" style="margin:0"><h1>Smart Matchmaker</h1><p>AI parses Thai requests and forms balanced teams.</p></div>
+    <button class="btn btn-primary" id="run-mm-btn" onclick="runMatchmaker()" style="padding:11px 24px;font-size:14px">▶ Run Matchmaker</button>
+  </div>
+
+  <!-- Matchmaking Rules (collapsible) -->
+  <div class="card">
+    <div class="collapsible-header" onclick="S.mmRulesOpen=!S.mmRulesOpen;toggleCollapse('mm-rules-body','mm-rules-icon')">
+      <div class="card-title" style="margin:0">⚙ Matchmaking Rules</div>
+      <span class="collapse-icon ${S.mmRulesOpen?'open':''}" id="mm-rules-icon">▼</span>
+    </div>
+    <div class="collapsible-body" id="mm-rules-body" style="max-height:${S.mmRulesOpen?'500px':'0px'}">
+      <div class="mm-rules-panel" style="margin-top:14px">
+        <div style="font-size:12px;color:var(--sub);margin-bottom:12px;font-weight:600">ขนาดทีมสูงสุดต่อเกม</div>
+        ${[['ROV','rovSize'],['MLBB','mlbbSize'],['Valorant','valorantSize'],['PUBG Mobile','pubgSize']].map(([g,k])=>`
+        <div class="game-size-row">
+          <div class="game-size-label">${g}</div>
+          <input type="number" class="game-size-input" value="${S.mmRules[k]}" min="2" max="10"
+            onchange="S.mmRules.${k}=parseInt(this.value)||5" style="width:60px">
+          <span style="font-size:11px;color:var(--mut)">คน</span>
+        </div>`).join('')}
+        <div style="margin-top:14px;margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
+            <span style="color:var(--sub)">Time Window Tolerance</span>
+            <strong id="tw-display">${S.mmRules.timeWindow} นาที</strong>
+          </div>
+          <input type="range" min="0" max="120" value="${S.mmRules.timeWindow}" step="15"
+            oninput="S.mmRules.timeWindow=parseInt(this.value);document.getElementById('tw-display').textContent=this.value+' นาที'">
+          <div style="font-size:10px;color:var(--mut);margin-top:4px">จับคู่ผู้เล่นที่เวลาต่างกันไม่เกิน X นาที</div>
+        </div>
+        <div style="margin-top:14px">
+          <label class="form-label">Rank Gap Tolerance</label>
+          <select id="rank-gap" style="width:100%" onchange="S.mmRules.rankGap=this.value">
+            <option value="any" ${S.mmRules.rankGap==='any'?'selected':''}>Any rank</option>
+            <option value="1tier" ${S.mmRules.rankGap==='1tier'?'selected':''}>±1 tier</option>
+            <option value="same" ${S.mmRules.rankGap==='same'?'selected':''}>Same tier only</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="saveMMRules()" style="margin-top:14px">บันทึกกฎ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Request -->
+  <div class="card">
+    <div class="card-title" style="color:var(--acc)">🤖 เพิ่ม Match Request <span style="font-size:10px;color:var(--sub);font-weight:400">AI parse ให้อัตโนมัติ</span></div>
+    <div style="display:flex;gap:10px">
+      <input type="text" id="req-inp" placeholder="เช่น 'หาตี้ ROV 3 ทุ่ม ขอสายซัพ' หรือ 'ใครว่าง MLBB คืนนี้ สาย mid'" style="flex:1">
+      <button class="btn btn-primary" id="add-req-btn" onclick="addRequest()" style="flex-shrink:0">Add</button>
+    </div>
+    <div id="req-parse-result" style="margin-top:8px;font-size:12px;color:var(--mut)"></div>
+  </div>
+
+  <!-- Panels -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+    <!-- Incoming -->
+    <div class="card" style="margin:0">
+      <div class="card-title" style="justify-content:space-between">
+        <span>⏰ Incoming Requests <span id="req-cnt"></span></span>
+        <button class="btn btn-outline btn-sm" onclick="showModal('Clear All Requests','ล้าง request ทั้งหมดที่รออยู่?','Clear All',()=>{REQUESTS=REQUESTS.map(r=>({...r,status:'matched'}));renderReqs();toast('ล้าง requests แล้ว','info');})">Clear All</button>
+      </div>
+      <div id="req-list"></div>
+    </div>
+    <!-- Teams -->
+    <div class="card" style="margin:0;max-height:520px;overflow-y:auto">
+      <div class="card-title">⚔ Active Teams <span id="team-cnt"></span></div>
+      <div id="team-list"></div>
+    </div>
+  </div>
+
+  <!-- Match History (collapsible) -->
+  <div class="card">
+    <div class="collapsible-header" onclick="S.histOpen=!S.histOpen;toggleCollapse('hist-body','hist-icon')">
+      <div class="card-title" style="margin:0">📜 Match History (7 วันล่าสุด)</div>
+      <span class="collapse-icon ${S.histOpen?'open':''}" id="hist-icon">▼</span>
+    </div>
+    <div class="collapsible-body" id="hist-body" style="max-height:${S.histOpen?'400px':'0px'}">
+      <div style="margin-top:14px" class="hist-table-wrap">
+        <table><thead><tr><th>Date</th><th>Game</th><th>Players</th><th>Time</th><th>Outcome</th></tr></thead>
+        <tbody>${MATCH_HISTORY.map(h=>`<tr>
+          <td style="color:var(--sub)">${h.date}</td>
+          <td style="font-weight:600">${h.game}</td>
+          <td>${badge(h.players+' คน','#7C5CFC')}</td>
+          <td style="font-family:var(--font-mono);font-size:11px">${h.time}</td>
+          <td>${h.outcome==='สำเร็จ'?badge('สำเร็จ','#00E5A0'):badge('ยกเลิก','#FF4757')}</td>
+        </tr>`).join('')}</tbody></table>
+        <div style="padding:10px 0;font-size:11px;color:var(--mut);text-align:center">แสดง ${MATCH_HISTORY.length} รายการ</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function saveMMRules(){toast('✅ บันทึกกฎ Matchmaking แล้ว','success');}
+function initMatchmaking(){renderReqs();renderTeams();}
+function renderReqs(){
+  const el=document.getElementById('req-list'),cnt=document.getElementById('req-cnt');if(!el)return;
+  const pend=REQUESTS.filter(r=>r.status!=='matched');
+  if(cnt)cnt.innerHTML=badge(pend.length,'#FFA502');
+  if(pend.length===0){el.innerHTML=`<div style="text-align:center;padding:28px;color:var(--mut);font-size:13px">All caught up — no pending requests 🎉</div>`;return;}
+  el.innerHTML=pend.map(r=>`<div class="match-req">
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="avatar" style="width:28px;height:28px;font-size:11px">${r.nick.charAt(0)}</div>
+        <strong style="font-size:13px">${r.nick}</strong>
+      </div>
+      <span style="font-size:11px;color:var(--mut);font-family:var(--font-mono)">${r.time}</span>
+    </div>
+    <p style="font-size:12px;color:var(--sub);margin-bottom:8px;line-height:1.6">${r.text}</p>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      ${badge(r.game,'#7C5CFC')} ${badge(r.role,'#00E5A0')} ${badge(r.time,'#FFA502')}
+      ${(!r.confidence||r.confidence<0.6)?`<button class="btn btn-outline btn-sm" style="font-size:10px;padding:3px 9px" onclick="manualParse(${r.id})">Parse manually</button>`:''}
+    </div>
+  </div>`).join('');
+}
+function renderTeams(){
+  const el=document.getElementById('team-list'),cnt=document.getElementById('team-cnt');if(!el)return;
+  if(cnt)cnt.innerHTML=badge(TEAMS.length,'#00E5A0');
+  if(TEAMS.length===0){el.innerHTML=`<div style="text-align:center;padding:28px;color:var(--mut);font-size:13px">ยังไม่มีทีม — กด Run Matchmaker</div>`;return;}
+  el.innerHTML=TEAMS.map((t,i)=>`<div class="team-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+      <div><strong>${t.game}</strong><div style="font-size:10px;color:var(--mut);margin-top:2px">${t.members.length} players</div></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;color:var(--mut);font-family:var(--font-mono)">${t.time}</span>
+        <button class="btn btn-outline btn-sm" style="font-size:10px;padding:3px 9px" onclick="notifyTeam(${i})">ส่งแจ้งเตือน</button>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap">${t.members.map((m,j)=>`
+    <div class="player-pill">
+      <div class="player-av">${m.charAt(0)}</div>
+      <div><div style="font-size:11px;font-weight:700">${m}</div><div style="font-size:9px;color:var(--mut)">${t.styles[j]}</div></div>
+    </div>`).join('')}</div>
+  </div>`).join('');
+}
+function notifyTeam(idx){
+  const t=TEAMS[idx];
+  toast(`📢 ส่งแจ้งเตือนทีม ${t.game} · ${t.time} แล้ว (LINE/Discord)`, 'success');
+}
+function manualParse(id){
+  const r=REQUESTS.find(x=>x.id===id);if(!r)return;
+  const game=prompt(`Game (${r.game}):`)||r.game;
+  const role=prompt(`Role (${r.role}):`)||r.role;
+  const time=prompt(`Time (${r.time}):`)||r.time;
+  REQUESTS=REQUESTS.map(x=>x.id===id?{...x,game,role,time,confidence:1.0}:x);
+  renderReqs();toast('Parse แมนนวลแล้ว','success');
+}
+async function addRequest(){
+  const inp=document.getElementById('req-inp'),btn=document.getElementById('add-req-btn'),res=document.getElementById('req-parse-result');
+  const txt=inp?.value?.trim();if(!txt)return;
+  btn.textContent='Parsing…';btn.disabled=true;res.textContent='AI กำลังวิเคราะห์...';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,
+        system:`แปลงข้อความหาทีมภาษาไทยเกมเมอร์เป็น JSON: {"game":"...","role":"...","time_24h":"HH:MM","confidence":0.0-1.0} ตอบ JSON เท่านั้น`,
+        messages:[{role:'user',content:`"${txt}"`}]})});
+    const d=await r.json();
+    const parsed=JSON.parse(d.content[0].text.replace(/```json|```/g,'').trim());
+    REQUESTS.push({id:Date.now(),nick:'คุณ',text:txt,game:parsed.game||'ROV',role:parsed.role||'Fill',time:parsed.time_24h||'21:00',status:'pending',confidence:parsed.confidence||0.8});
+    res.innerHTML=`<span style="color:var(--grn)">✓ Parse: <strong>${parsed.game}</strong> · ${parsed.role} · ${parsed.time_24h} (confidence: ${((parsed.confidence||0.8)*100).toFixed(0)}%)</span>`;
+    toast('เพิ่ม request แล้ว','success');
+  }catch(e){
+    REQUESTS.push({id:Date.now(),nick:'คุณ',text:txt,game:'ROV',role:'Fill',time:'21:00',status:'pending',confidence:0.4});
+    res.textContent='Added (manual parse — ความแม่นยำต่ำ)';
+  }
+  btn.textContent='Add';btn.disabled=false;if(inp)inp.value='';renderReqs();
+}
+async function runMatchmaker(){
+  const btn=document.getElementById('run-mm-btn');if(!btn||S.runningMatch)return;
+  S.runningMatch=true;btn.innerHTML='<span style="animation:spin 1s linear infinite;display:inline-block">⚙</span> Running…';btn.disabled=true;
+  await new Promise(r=>setTimeout(r,1800));
+  const pending=REQUESTS.filter(r=>r.status!=='matched');
+  if(pending.length>0){
+    const groups={};
+    pending.forEach(r=>{if(!groups[r.game])groups[r.game]=[];groups[r.game].push(r);});
+    Object.entries(groups).forEach(([game,reqs])=>{
+      TEAMS.unshift({game,time:reqs[0].time,members:reqs.map(r=>r.nick),styles:reqs.map(()=>'Mixed')});
+      MATCH_HISTORY.unshift({date:'วันนี้',game,players:reqs.length,time:reqs[0].time,outcome:'สำเร็จ'});
+    });
+    REQUESTS=REQUESTS.map(r=>pending.find(p=>p.id===r.id)?{...r,status:'matched'}:r);
+    toast(`✅ จับทีมได้ ${Object.keys(groups).length} ทีม`,'success');
+  } else { toast('ไม่มี request ที่รอจับทีม','info'); }
+  S.runningMatch=false;btn.textContent='▶ Run Matchmaker';btn.disabled=false;
+  renderReqs();renderTeams();
+}
+
+
+// MEMBERS
+// ═══════════════════════════════════════════════
+function buildMembers(){
+  const personas=[...new Set(MEMBERS.map(m=>m.persona))];
+  return `
+  <div class="page-hdr"><h1>Members</h1><p>Synthetic personas built from real activity.</p></div>
+  <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+    <input type="search" id="mem-search" placeholder="Search nickname or game…" oninput="renderMemberGrid()" style="flex:1;min-width:160px">
+    <select id="persona-filter" onchange="renderMemberGrid()" style="width:auto">
+      <option value="all">All personas</option>
+      ${personas.map(p=>`<option value="${p}">${p}</option>`).join('')}
+    </select>
+  </div>
+  <div class="member-grid" id="member-grid"></div>
+  <div id="members-empty" style="display:none;text-align:center;padding:60px 20px;color:var(--mut)">
+    <div style="font-size:36px;margin-bottom:12px">🎮</div>
+    <div style="font-size:15px;font-weight:600;margin-bottom:6px">ยังไม่มีสมาชิก</div>
+    <div style="font-size:13px;color:var(--mut)">เชิญสมาชิกผ่าน Onboarding Link เพื่อเริ่มสร้าง Skill Card</div>
+    <button class="btn btn-primary" style="margin-top:16px" onclick="showOnboarding()">🔗 ลองระบบ Onboarding</button>
+  </div>`;
+}
+function initMembers(){renderMemberGrid();}
+function renderMemberGrid(){
+  const grid=document.getElementById('member-grid');if(!grid)return;
+  const q=(document.getElementById('mem-search')?.value||'').toLowerCase();
+  const pf=document.getElementById('persona-filter')?.value||'all';
+  const filtered=MEMBERS.filter(m=>(m.nick.includes(q)||m.game.toLowerCase().includes(q))&&(pf==='all'||m.persona===pf));
+  const empty=document.getElementById('members-empty');
+  if(filtered.length===0){grid.style.display='none';if(empty)empty.style.display='block';return;}
+  if(empty)empty.style.display='none';grid.style.display='';
+  grid.innerHTML=filtered.map(m=>`<div class="member-card" onclick="openMemberDrawer('${m.nick}')">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <div class="avatar" style="width:42px;height:42px;font-size:16px">${m.nick.charAt(0)}</div>
+      <div><div style="font-weight:700;font-size:14px">${m.nick}</div><div style="font-size:11px;color:var(--sub)">${m.persona}</div></div>
+    </div>
+    ${badge(m.role,'#7C5CFC')}
+    <div style="margin-top:10px">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--mut);margin-bottom:4px"><span>ENGAGEMENT</span><strong style="color:var(--txt)">${m.eng.toFixed(1)}</strong></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${m.eng}%"></div></div>
+    </div>
+  </div>`).join('');
+}
+function openMemberDrawer(nick){
+  const m=MEMBERS.find(x=>x.nick===nick);if(!m)return;
+  const drawer=document.getElementById('member-drawer');
+  const content=document.getElementById('drawer-content');
+  const overlay=document.getElementById('drawer-overlay');
+  content.innerHTML=`
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+    <span style="font-family:var(--font-head);font-size:18px;font-weight:700">Member Profile</span>
+    <button class="btn btn-outline btn-sm" onclick="closeDrawer()">✕</button>
+  </div>
+  <div style="text-align:center;margin-bottom:22px">
+    <div class="avatar" style="width:64px;height:64px;font-size:24px;margin:0 auto 10px">${m.nick.charAt(0)}</div>
+    <div style="font-family:var(--font-head);font-size:20px;font-weight:700">${m.nick}</div>
+    <div style="font-size:12px;color:var(--sub);margin-top:3px">${m.persona}</div>
+  </div>
+  ${[['Game',m.game],['Role',m.role],['Rank',m.rank],['Playstyle',m.ps]].map(([l,v])=>`
+  <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bdr);font-size:13px">
+    <span style="color:var(--sub)">${l}</span><strong>${v}</strong>
+  </div>`).join('')}
+  <div style="margin-top:14px;background:var(--acc-dim);border-radius:var(--r);padding:14px 16px">
+    <div style="font-size:10px;color:var(--mut);letter-spacing:1px">ENGAGEMENT SCORE</div>
+    <div style="font-family:var(--font-mono);font-size:30px;font-weight:600;color:var(--acc)">${m.eng.toFixed(1)}</div>
+    <div class="progress-bar" style="margin-top:8px;height:6px"><div class="progress-fill" style="width:${m.eng}%"></div></div>
+  </div>
+  <div style="margin-top:10px;background:var(--grn-dim);border:1px solid rgba(0,229,160,0.2);border-radius:var(--r);padding:12px 16px;display:flex;justify-content:space-between;align-items:center">
+    <div><div style="font-size:10px;color:var(--mut)">PERSONA</div><div style="font-family:var(--font-head);font-size:17px;font-weight:700;color:var(--grn)">${m.persona}</div></div>
+    <span style="font-size:26px">🏆</span>
+  </div>
+  <div style="margin-top:12px">
+    <div style="font-size:11px;color:var(--sub);margin-bottom:8px;font-weight:600">BEHAVIOR FLAGS</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      ${m.ps==='aggressive'?badge('High Activity','#FFA502'):''}
+      ${m.eng>80?badge('Top Engager','#00E5A0'):''}
+      ${badge('Clean Record','#7C5CFC')}
+    </div>
+  </div>`;
+  drawer.classList.add('open');overlay.classList.add('show');
+}
+function closeDrawer(){document.getElementById('member-drawer').classList.remove('open');document.getElementById('drawer-overlay').classList.remove('show');}
+
+// ═══════════════════════════════════════════════
+// INSIGHTS
+// ═══════════════════════════════════════════════
+function buildInsights(){
+  return `
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+    <div class="page-hdr" style="margin:0"><h1>Insights & Reports</h1><p>Sponsor-ready intelligence on your community.</p></div>
+    <button class="btn btn-outline" id="export-btn" onclick="exportPDF()">↓ Export Report (PDF)</button>
+  </div>
+  <div class="insight-row" style="grid-template-columns:1fr 1.6fr">
+    <div class="card" style="margin:0"><div class="card-title">Audience Segmentation</div>
+      <div style="position:relative;height:180px"><canvas id="donut-c" role="img" aria-label="Persona distribution">Persona distribution</canvas></div>
+      <div id="donut-legend" style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:12px"></div>
+    </div>
+    <div class="card" style="margin:0"><div class="card-title">Engagement Trend (30 days)</div>
+      <div style="position:relative;height:220px"><canvas id="line-c" role="img" aria-label="Engagement trend">Engagement trend</canvas></div>
+    </div>
+  </div>
+  <div class="insight-row" style="grid-template-columns:1.5fr 1fr;margin-top:14px">
+    <div class="card" style="margin:0"><div class="card-title">Top Content Topics</div><div id="topic-bars"></div></div>
+    <div class="mono-insight" style="margin:0">
+      <div style="font-size:10px;letter-spacing:2px;opacity:0.6;margin-bottom:10px">MONETIZATION ESTIMATE</div>
+      <div style="font-family:var(--font-head);font-size:42px;font-weight:700">฿725</div>
+      <div style="font-size:12px;opacity:0.7;margin-top:4px">Projected monthly ad revenue</div>
+      <div style="margin-top:18px;background:rgba(255,255,255,0.1);border-radius:8px;padding:12px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;opacity:0.8"><span>Pro Plan target</span><strong>฿5,800/mo</strong></div>
+        <div style="background:rgba(255,255,255,0.2);border-radius:4px;height:5px;margin-top:8px"><div style="background:#fff;width:12%;height:100%;border-radius:4px"></div></div>
+        <div style="font-size:10px;opacity:0.5;margin-top:4px">12% to Pro target</div>
+      </div>
+    </div>
+  </div>`;
+}
+function initInsights(){
+  const pdata=[{name:'Hardcore Carry',val:11,col:'#FF4757'},{name:'Chill Support',val:11,col:'#00E5A0'},{name:'Strategist',val:6,col:'#38B6FF'},{name:'Aggressive Jungler',val:6,col:'#FFA502'},{name:'Casual Tank',val:6,col:'#A29BFE'},{name:'Rage Rusher',val:6,col:'#ff6b6b'},{name:'Mid Diff',val:6,col:'#7C5CFC'},{name:'Team Mom',val:6,col:'#2ed573'}];
+  const dc=document.getElementById('donut-c');
+  if(dc&&window.Chart){
+    new Chart(dc,{type:'doughnut',data:{labels:pdata.map(p=>p.name),datasets:[{data:pdata.map(p=>p.val),backgroundColor:pdata.map(p=>p.col),borderWidth:0,hoverOffset:4}]},options:{cutout:'62%',plugins:{legend:{display:false}},responsive:true,maintainAspectRatio:false}});
+    const dl=document.getElementById('donut-legend');
+    if(dl)dl.innerHTML=pdata.map(p=>`<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--sub)"><div style="width:8px;height:8px;border-radius:2px;background:${p.col};flex-shrink:0"></div><span>${p.name}</span><strong style="color:var(--txt);margin-left:auto">${p.val}</strong></div>`).join('');
+  }
+  const trend=Array.from({length:30},(_,i)=>Math.round(22+Math.sin(i*0.4)*8+Math.random()*5));
+  const lc=document.getElementById('line-c');
+  if(lc&&window.Chart)new Chart(lc,{type:'line',data:{labels:Array.from({length:30},(_,i)=>i+1),datasets:[{data:trend,borderColor:'#7C5CFC',borderWidth:2,pointRadius:0,tension:0.4,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#5A5A7A',maxTicksLimit:8},grid:{color:'#252538'}},y:{ticks:{color:'#5A5A7A'},grid:{color:'#252538'}}}}});
+  const tb=document.getElementById('topic-bars');
+  const topics=[{t:'Match requests',v:89},{t:'Highlight clips',v:64},{t:'Pro strategies',v:51},{t:'Buy/Sell posts',v:12},{t:'Complaints',v:8}];
+  if(tb)tb.innerHTML=topics.map(t=>`<div class="bar-row"><div class="bar-label">${t.t}</div><div class="bar-track"><div class="bar-fill-grn" style="width:${Math.round(t.v/89*100)}%"></div></div><div class="bar-val">${t.v}</div></div>`).join('');
+}
+function exportPDF(){
+  const btn=document.getElementById('export-btn');btn.textContent='Exporting…';
+  setTimeout(()=>{btn.textContent='↓ Export Report (PDF)';toast('📄 PDF Report สร้างสำเร็จ!','success');},1200);
+}
+
+// ═══════════════════════════════════════════════
+// SETTINGS (AI Control Panel + Profile)
+// ═══════════════════════════════════════════════
+function buildSettings(){
+  return `
+  <div class="page-hdr"><h1>Settings</h1><p>Configure AI, integrations, profile, and your plan.</p></div>
+  <div class="tab-row" style="overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;">
+    <button class="tab-btn ${S.settingsTab==='ai'?'active':''}" onclick="switchSettingsTab('ai',this)" style="white-space:nowrap">AI Config</button>
+    <button class="tab-btn ${S.settingsTab==='integrations'?'active':''}" onclick="switchSettingsTab('integrations',this)" style="white-space:nowrap">🔗 Integrations</button>
+    <button class="tab-btn ${S.settingsTab==='health'?'active':''}" onclick="switchSettingsTab('health',this)" style="white-space:nowrap">🩺 System Health</button>
+    <button class="tab-btn ${S.settingsTab==='platform'?'active':''}" onclick="switchSettingsTab('platform',this)" style="white-space:nowrap">Platforms</button>
+    <button class="tab-btn ${S.settingsTab==='profile'?'active':''}" onclick="switchSettingsTab('profile',this)" style="white-space:nowrap">Profile</button>
+    <button class="tab-btn ${S.settingsTab==='plan'?'active':''}" onclick="switchSettingsTab('plan',this)" style="white-space:nowrap">Subscription</button>
+  </div>
+  <div id="settings-tab-content"></div>`;
+}
+function initSettings(){renderSettingsTab();}
+function switchSettingsTab(tab,el){
+  S.settingsTab=tab;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  if(el)el.classList.add('active');
+  renderSettingsTab();
+}
+function renderSettingsTab(){
+  const area=document.getElementById('settings-tab-content');if(!area)return;
+  if(S.settingsTab==='ai') area.innerHTML=buildAITab();
+  else if(S.settingsTab==='integrations'){area.innerHTML=buildIntegrationsTab();initIntegrationsTab();}
+  else if(S.settingsTab==='health'){area.innerHTML=buildHealthTab();runHealthChecks();}
+  else if(S.settingsTab==='platform') area.innerHTML=buildPlatformTab();
+  else if(S.settingsTab==='profile'){area.innerHTML=buildProfileTab();initProfileTab();}
+  else if(S.settingsTab==='plan') area.innerHTML=buildPlanTab();
+}
+
+// ─── AI CONFIG TAB ────────────────────────────
+function buildAITab(){
+  const notifItems=[
+    {key:'spamSpike',label:'Spam Spike Alert',sub:'แจ้งเมื่อพบ spam เกิน 5 โพสต์ใน 1 ชั่วโมง'},
+    {key:'teamFormed',label:'Team Formed',sub:'แจ้งเมื่อ AI จับทีมสำเร็จ'},
+    {key:'memberMilestone',label:'Member Milestone',sub:'แจ้งเมื่อสมาชิกถึง 100, 500, 1000 คน'},
+  ];
+  return `
+  <!-- Moderation shortcut -->
+  <div class="card">
+    <div class="card-title">🛡 AI Moderation</div>
+    <div class="ai-link-card" onclick="navTo('moderation',document.querySelectorAll('.nav-item')[1])">
+      <div>
+        <div style="font-weight:600;font-size:13px">Confidence Threshold</div>
+        <div style="font-size:11px;color:var(--sub);margin-top:2px">ปัจจุบัน: <strong style="color:var(--acc)">${S.thres.toFixed(2)}</strong> · Auto-remove: <strong>${S.autoRemove?'เปิด':'ปิด'}</strong></div>
+      </div>
+      <span style="color:var(--acc)">→ ไปยังหน้า Moderation</span>
+    </div>
+    <div style="margin-top:6px">
+      <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:10px"><span>Threshold (quick adjust)</span><strong style="font-family:var(--font-mono);color:var(--acc)" id="ai-thres-val">${S.thres.toFixed(2)}</strong></div>
+      <input type="range" min="50" max="100" value="${Math.round(S.thres*100)}" oninput="S.thres=this.value/100;document.getElementById('ai-thres-val').textContent=S.thres.toFixed(2)">
+    </div>
+  </div>
+
+  <!-- Matchmaker Rules shortcut -->
+  <div class="card">
+    <div class="card-title">⚔ Matchmaker Rules</div>
+    ${[['ROV','rovSize'],['MLBB','mlbbSize'],['Valorant','valorantSize'],['PUBG Mobile','pubgSize']].map(([g,k])=>`
+    <div class="game-size-row" style="margin-bottom:10px">
+      <div class="game-size-label">${g}</div>
+      <input type="number" class="game-size-input" value="${S.mmRules[k]}" min="2" max="10" onchange="S.mmRules.${k}=parseInt(this.value)||5" style="width:60px">
+      <span style="font-size:11px;color:var(--mut)">คน</span>
+    </div>`).join('')}
+    <div style="margin:14px 0 8px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px"><span style="color:var(--sub)">Time Window</span><strong id="ai-tw-val">${S.mmRules.timeWindow} นาที</strong></div>
+      <input type="range" min="0" max="120" step="15" value="${S.mmRules.timeWindow}" oninput="S.mmRules.timeWindow=parseInt(this.value);document.getElementById('ai-tw-val').textContent=this.value+' นาที'">
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="saveMMRules()">บันทึกกฎ Matchmaker</button>
+  </div>
+
+  <!-- Webhook Cards -->
+  <div class="card">
+    <div class="card-title">🔗 Platform Webhooks</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+      ${[
+        {id:'facebook',label:'Facebook',icon:'📘',col:'#1877F2',wh:'https://api.guildos.app/wh/fb/abc123'},
+        {id:'discord',label:'Discord',icon:'💬',col:'#5865F2',wh:'https://api.guildos.app/wh/dc/abc123'},
+        {id:'line',label:'LINE',icon:'📱',col:'#00C300',wh:'https://api.guildos.app/wh/line/abc123'},
+      ].map(p=>{const on=S.platforms[p.id];return `
+      <div style="background:var(--surf2);border-radius:var(--r);padding:16px;border:1px solid ${on?p.col+'55':'var(--bdr)'}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:6px"><span style="font-size:16px">${p.icon}</span><strong style="font-size:12px">${p.label}</strong></div>
+          <button class="toggle" onclick="S.platforms.${p.id}=!S.platforms.${p.id};renderSettingsTab()" style="background:${on?'var(--acc)':'var(--bdr)'}"><div class="toggle-knob" style="left:${on?22:3}px"></div></button>
+        </div>
+        ${badge(on?'Connected':'Not connected',on?'#00E5A0':'#5A5A7A')}
+        <div style="margin-top:10px;display:flex;gap:6px;align-items:center">
+          <div style="flex:1;font-size:9px;color:var(--mut);font-family:var(--font-mono);word-break:break-all;background:var(--bg);border-radius:6px;padding:5px 8px;line-height:1.4">${p.wh}</div>
+          <button class="btn btn-outline btn-sm" style="font-size:10px;padding:4px 8px;flex-shrink:0" onclick="copyText('${p.wh}')">Copy</button>
+        </div>
+        <button class="btn btn-outline btn-sm" style="margin-top:8px;width:100%;font-size:11px" onclick="testWebhook('${p.id}','${p.label}')">Test Connection</button>
+      </div>`;}).join('')}
+    </div>
+  </div>
+
+  <!-- Notification Preferences -->
+  <div class="card">
+    <div class="card-title">🔔 Notification Preferences</div>
+    <div style="font-size:12px;color:var(--sub);margin-bottom:14px">รับแจ้งเตือนทาง Email เมื่อเกิดเหตุการณ์สำคัญ</div>
+    ${notifItems.map(n=>`
+    <div class="notif-row">
+      <div>
+        <div class="notif-label">${n.label}</div>
+        <div class="notif-sub">${n.sub}</div>
+      </div>
+      <button class="toggle" onclick="S.notifs.${n.key}=!S.notifs.${n.key};renderSettingsTab()" style="background:${S.notifs[n.key]?'var(--acc)':'var(--bdr)'}">
+        <div class="toggle-knob" style="left:${S.notifs[n.key]?22:3}px"></div>
+      </button>
+    </div>`).join('')}
+    <button class="btn btn-primary btn-sm" onclick="toast('บันทึก Notification settings แล้ว','success')" style="margin-top:14px">บันทึก</button>
+  </div>`;
+}
+
+function copyText(txt){
+  navigator.clipboard.writeText(txt).then(()=>toast('คัดลอกแล้ว','success')).catch(()=>{
+    const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('คัดลอกแล้ว','success');
+  });
+}
+async function testWebhook(id,label){
+  toast(`🔄 กำลังทดสอบ ${label} Webhook…`,'info');
+  await new Promise(r=>setTimeout(r,1200));
+  if(S.platforms[id]) toast(`✅ ${label} Webhook ทำงานปกติ (200 OK)`,'success');
+  else toast(`❌ ${label} ยังไม่ได้เชื่อมต่อ`,'error');
+}
+
+// ─── PLATFORM TAB ────────────────────────────
+function buildPlatformTab(){
+  const plats=[
+    {id:'facebook',label:'Facebook',icon:'📘',col:'#1877F2',wh:'https://api.guildos.app/wh/fb/abc123'},
+    {id:'discord',label:'Discord',icon:'💬',col:'#5865F2',wh:'https://api.guildos.app/wh/dc/abc123'},
+    {id:'line',label:'LINE',icon:'📱',col:'#00C300',wh:'https://api.guildos.app/wh/line/abc123'},
+  ];
+  return `<div class="card"><div class="card-title">Connected Platforms</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+    ${plats.map(p=>{const on=S.platforms[p.id];return `
+    <div style="background:var(--surf2);border-radius:var(--r);padding:16px;border:1px solid ${on?p.col+'55':'var(--bdr)'}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:7px"><span style="font-size:18px">${p.icon}</span><strong style="font-size:13px">${p.label}</strong></div>
+        <button class="toggle" onclick="S.platforms.${p.id}=!S.platforms.${p.id};renderSettingsTab()" style="background:${on?'var(--acc)':'var(--bdr)'}"><div class="toggle-knob" style="left:${on?22:3}px"></div></button>
+      </div>
+      ${badge(on?'Connected':'Not connected',on?'#00E5A0':'#5A5A7A')}
+      <div style="margin-top:10px;font-size:9px;color:var(--mut);font-family:var(--font-mono);word-break:break-all;line-height:1.5">${p.wh}</div>
+      <button class="btn btn-outline btn-sm" style="margin-top:8px;width:100%;font-size:11px" onclick="testWebhook('${p.id}','${p.label}')">Test Connection</button>
+    </div>`}).join('')}
+  </div></div>`;
+}
+
+// ─── PLAN TAB ────────────────────────────────
+function buildPlanTab(){
+  const plans=[
+    {id:'starter',name:'Starter',price:'฿490',members:'5k–30k',limit:30000,aiLimit:1000,feats:['AI Moderation','Basic Matchmaking']},
+    {id:'pro',name:'Pro',price:'฿1,490',members:'30k–150k',limit:150000,aiLimit:10000,feats:['Full AI Suite','Sponsor Reports','Analytics']},
+    {id:'enterprise',name:'Enterprise',price:'฿2,990+',members:'150k+',limit:999999,aiLimit:100000,feats:['Custom AI','Whitelabel','Priority Support']},
+  ];
+  const curr=plans.find(p=>p.id===S.plan)||plans[0];
+  const memberCount=parseInt(AUTH.community?.memberCount||58);
+  const aiCalls=247;
+  const memberPct=Math.min(Math.round(memberCount/curr.limit*100),100);
+  const aiPct=Math.min(Math.round(aiCalls/curr.aiLimit*100),100);
+  return `
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+      <div>
+        <div class="card-title" style="margin-bottom:4px">Current Plan</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          ${badge(curr.name,'#7C5CFC')}
+          <span style="font-family:var(--font-head);font-size:22px;font-weight:700;color:var(--acc)">${curr.price}<span style="font-size:13px;font-weight:400;color:var(--mut)">/mo</span></span>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="showUpgradeModal()">⬆ Upgrade Plan</button>
+    </div>
+    <!-- Usage Stats -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="usage-row">
+        <div class="usage-header"><span style="color:var(--sub)">Members</span><span>${memberCount.toLocaleString()} / ${curr.limit.toLocaleString()}</span></div>
+        <div class="usage-bar"><div class="usage-fill" style="width:${memberPct}%;background:${memberPct>90?'#FF4757':memberPct>70?'#FFA502':'#7C5CFC'}"></div></div>
+        <div style="font-size:10px;color:var(--mut);margin-top:4px">${memberPct}% ใช้งานแล้ว</div>
+      </div>
+      <div class="usage-row">
+        <div class="usage-header"><span style="color:var(--sub)">AI Calls (เดือนนี้)</span><span>${aiCalls.toLocaleString()} / ${curr.aiLimit.toLocaleString()}</span></div>
+        <div class="usage-bar"><div class="usage-fill" style="width:${aiPct}%;background:${aiPct>90?'#FF4757':aiPct>70?'#FFA502':'#00E5A0'}"></div></div>
+        <div style="font-size:10px;color:var(--mut);margin-top:4px">${aiPct}% ใช้งานแล้ว</div>
+      </div>
+    </div>
+  </div>
+  <div id="upgrade-section"></div>`;
+}
+
+function showUpgradeModal(){
+  const plans=[
+    {id:'starter',name:'Starter',price:'฿490',members:'5k–30k',feats:['AI Moderation','Basic Matchmaking']},
+    {id:'pro',name:'Pro',price:'฿1,490',members:'30k–150k',feats:['Full AI Suite','Sponsor Reports','Analytics'],popular:true},
+    {id:'enterprise',name:'Enterprise',price:'฿2,990+',members:'150k+',feats:['Custom AI','Whitelabel','Priority Support']},
+  ];
+  const section=document.getElementById('upgrade-section');if(!section)return;
+  section.innerHTML=`<div class="card" style="border-color:var(--acc)">
+    <div class="card-title">เลือก Plan</div>
+    <div class="plan-upgrade-modal">
+      ${plans.map(p=>`<div class="plan-card ${S.plan===p.id?'chosen':''}" onclick="S.plan='${p.id}';toast('เปลี่ยนเป็น ${p.name} Plan แล้ว (demo)','success');renderSettingsTab()">
+        ${p.popular?`<div style="font-size:10px;background:rgba(124,92,252,0.2);color:var(--acc2);border-radius:99px;padding:2px 10px;display:inline-block;margin-bottom:6px">POPULAR</div>`:''}
+        <div class="plan-price-big">${p.name}</div>
+        <div style="font-family:var(--font-head);font-size:20px;color:var(--acc);font-weight:700">${p.price}<span style="font-size:12px;font-weight:400;color:var(--mut)">/mo</span></div>
+        <div style="font-size:11px;color:var(--mut);margin:4px 0 10px">${p.members} members</div>
+        ${p.feats.map(f=>`<div style="font-size:11px;color:var(--sub);margin-bottom:3px">✓ ${f}</div>`).join('')}
+        ${S.plan===p.id?`<div style="margin-top:8px">${badge('Current','#00E5A0')}</div>`:`<button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%" onclick="event.stopPropagation();S.plan='${p.id}';toast('อัปเกรดเป็น ${p.name} แล้ว (demo)','success');renderSettingsTab()">เลือก Plan นี้</button>`}
+      </div>`).join('')}
+    </div>
+  </div>`;
+  section.scrollIntoView({behavior:'smooth'});
+}
+
+// ─── PROFILE TAB ────────────────────────────
+function buildProfileTab(){
+  const u=AUTH.user;const c=AUTH.community;
+  return `
+  <div class="card">
+    <div class="card-title">ข้อมูลชุมชน</div>
+    <div class="form-row"><label class="form-label">ชื่อกลุ่ม</label><input type="text" id="p-group-name" value="${c?.groupName||'Thai ROV Squad'}"></div>
+    <div class="form-row"><label class="form-label">คำอธิบาย</label><textarea id="p-description" rows="3" style="resize:vertical">${c?.description||'กลุ่มเกม ROV อย่างเป็นทางการ'}</textarea></div>
+    <div class="form-row"><label class="form-label">แพลตฟอร์มหลัก</label>
+      <select id="p-platform" style="width:100%"><option ${c?.platform==='Facebook'?'selected':''}>Facebook</option><option ${c?.platform==='Discord'?'selected':''}>Discord</option><option ${c?.platform==='LINE'?'selected':''}>LINE</option></select>
+    </div>
+    <div class="form-row"><label class="form-label">URL กลุ่ม</label><input type="text" id="p-group-url" value="${c?.groupUrl||''}"></div>
+    <button class="btn btn-primary" onclick="saveCommunityInfo()" style="padding:10px 24px">บันทึกข้อมูลกลุ่ม</button>
+  </div>
+  <div class="card">
+    <div class="card-title">บัญชี Admin</div>
+    <div style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--surf2);border-radius:var(--r);margin-bottom:16px">
+      <div class="avatar" style="width:48px;height:48px;font-size:20px">${u?.name?.charAt(0)||'A'}</div>
+      <div><div style="font-weight:700;font-size:15px">${u?.name||'Admin'}</div><div style="font-size:12px;color:var(--sub)">${u?.email||''}</div></div>
+      ${badge('Admin','#7C5CFC')}
+    </div>
+    <div class="form-row"><label class="form-label">ชื่อแสดง</label><input type="text" id="p-admin-name" value="${u?.name||''}"></div>
+    <button class="btn btn-outline btn-sm" onclick="saveAdminName()" style="margin-bottom:20px">บันทึกชื่อ</button>
+    <div style="border-top:1px solid var(--bdr);padding-top:18px">
+      <div style="font-weight:600;font-size:14px;margin-bottom:14px">เปลี่ยนรหัสผ่าน</div>
+      <div class="form-row"><label class="form-label">รหัสผ่านปัจจุบัน</label><input type="password" id="p-old-pass" placeholder="••••••••"></div>
+      <div class="form-row"><label class="form-label">รหัสผ่านใหม่</label><input type="password" id="p-new-pass" placeholder="อย่างน้อย 6 ตัวอักษร"></div>
+      <div class="form-row"><label class="form-label">ยืนยันรหัสผ่านใหม่</label><input type="password" id="p-confirm-pass" placeholder="••••••••"></div>
+      <button class="btn btn-primary" onclick="changePassword()" style="padding:10px 24px">เปลี่ยนรหัสผ่าน</button>
+    </div>
+  </div>
+  <div class="danger-zone">
+    <div class="danger-zone-title">⚠ Danger Zone</div>
+    <div class="danger-zone-desc">การดำเนินการเหล่านี้ไม่สามารถยกเลิกได้</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <button class="btn btn-outline btn-sm" style="border-color:var(--red);color:var(--red)" onclick="resetCommunity()">Reset ข้อมูลชุมชน</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteCommunity()">ลบชุมชนนี้</button>
+    </div>
+  </div>`;
+}
+function initProfileTab(){}
+function saveCommunityInfo(){
+  const updated={...AUTH.community,groupName:document.getElementById('p-group-name').value,description:document.getElementById('p-description').value,platform:document.getElementById('p-platform').value,groupUrl:document.getElementById('p-group-url').value};
+  AUTH.saveCommunity(updated);
+  document.getElementById('sb-comm-name').textContent=updated.groupName;
+  document.getElementById('topbar-comm-name').textContent=updated.groupName;
+  toast('บันทึกข้อมูลชุมชนแล้ว ✅','success');
+}
+function saveAdminName(){
+  const name=document.getElementById('p-admin-name').value.trim();if(!name){toast('กรุณากรอกชื่อ','error');return;}
+  const u=AUTH.user;if(u){u.name=name;localStorage.setItem('guildos_user',JSON.stringify(u));}
+  document.getElementById('topbar-avatar').textContent=name.charAt(0).toUpperCase();
+  toast('บันทึกชื่อแล้ว ✅','success');
+}
+function changePassword(){
+  const op=document.getElementById('p-old-pass').value;
+  const np=document.getElementById('p-new-pass').value;
+  const cp=document.getElementById('p-confirm-pass').value;
+  if(!op){toast('กรุณากรอกรหัสผ่านปัจจุบัน','error');return;}
+  if(np.length<6){toast('รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัวอักษร','error');return;}
+  if(np!==cp){toast('รหัสผ่านใหม่ไม่ตรงกัน','error');return;}
+  toast('เปลี่ยนรหัสผ่านแล้ว ✅ (Supabase Auth จะ handle ใน production)','success');
+  ['p-old-pass','p-new-pass','p-confirm-pass'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+}
+function resetCommunity(){showModal('Reset ข้อมูลชุมชน','ข้อมูล Members, Posts และ Teams ทั้งหมดจะถูกล้าง?','Reset ทั้งหมด',()=>toast('Reset แล้ว (demo mode)','info'));}
+function deleteCommunity(){showModal('ลบชุมชนนี้','ข้อมูลทั้งหมดจะถูกลบถาวร ยืนยันหรือไม่?','ลบชุมชนถาวร',()=>{localStorage.removeItem('guildos_community');toast('ลบชุมชนแล้ว','error');setTimeout(()=>showSetup(),1500);});}
+
+
+// ONBOARDING CHAT (Member Skill Card Builder)
+// ═══════════════════════════════════════════════
+let chatHistory=[];let chatDone=false;let chatSkillCard=null;
+function initChat(){
+  chatHistory=[];chatDone=false;chatSkillCard=null;
+  const msgs=document.getElementById('chat-msgs');if(msgs)msgs.innerHTML='';
+  const area=document.getElementById('chat-input-area');if(area)area.style.display='';
+  addBotMsg('สวัสดีครับ! 🎮 ผม GuildOS Bot จะช่วยสร้าง Skill Card ให้คุณในไม่กี่นาที\n\nเริ่มต้นด้วย — <strong>ชื่อ IGN หรือชื่อในเกมของคุณคืออะไรครับ?</strong>');
+  chatHistory=[{role:'assistant',content:'สวัสดีครับ! ผม GuildOS Bot ถามทีละข้อเพื่อสร้าง Skill Card ให้คุณครับ เริ่มด้วยชื่อ IGN ของคุณก่อนเลยครับ'}];
+}
+function addBotMsg(html){const msgs=document.getElementById('chat-msgs');if(!msgs)return;const row=document.createElement('div');row.className='msg-row-bot';row.innerHTML=`<div class="bot-av">🤖</div><div class="bubble-bot">${html.replace(/\n/g,'<br>')}</div>`;msgs.appendChild(row);msgs.scrollTo(0,msgs.scrollHeight);}
+function addUserMsg(txt){const msgs=document.getElementById('chat-msgs');if(!msgs)return;const row=document.createElement('div');row.className='msg-row-user';row.innerHTML=`<div class="bubble-user">${txt}</div>`;msgs.appendChild(row);msgs.scrollTo(0,msgs.scrollHeight);}
+function showTyping(){const msgs=document.getElementById('chat-msgs');if(!msgs)return;const row=document.createElement('div');row.id='typing-row';row.className='msg-row-bot';row.innerHTML=`<div class="bot-av">🤖</div><div class="bubble-bot"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>`;msgs.appendChild(row);msgs.scrollTo(0,msgs.scrollHeight);}
+function hideTyping(){const el=document.getElementById('typing-row');if(el)el.remove();}
+async function sendChat(){
+  const inp=document.getElementById('chat-input');
+  const txt=inp?.value?.trim();if(!txt||chatDone)return;
+  inp.value='';addUserMsg(txt);
+  const newHist=[...chatHistory,{role:'user',content:txt}];chatHistory=newHist;
+  showTyping();if(inp)inp.disabled=true;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
+        system:`คุณคือ GuildOS Bot สร้างโปรไฟล์นักเล่นเกมไทย พูดภาษาไทยเป็นกันเอง ใช้ภาษาเกมเมอร์ได้ สั้นกระชับ
+ถามทีละข้อตามลำดับ: 1.ชื่อ IGN 2.เกมที่เล่น(ROV,MLBB,Valorant,PUBG,LoL WR,Free Fire) 3.Role ที่ถนัด 4.Rank 5.สไตล์(aggressive/chill/strategic) 6.เวลาว่าง
+เมื่อได้ครบ 6 ข้อแล้ว ตอบ: SKILLCARD:{"nickname":"...","game":"...","role":"...","rank":"...","playstyle":"aggressive|chill|strategic","available_times":["HH:MM-HH:MM"],"persona_tag":"Hardcore Carry|Chill Support|Aggressive Jungler|Team Mom|Mid Diff|Rage Rusher|Casual Tank|Strategist"}`,
+        messages:newHist})});
+    const d=await r.json();const botText=d.content[0].text;
+    hideTyping();
+    if(botText.startsWith('SKILLCARD:')){
+      const json=JSON.parse(botText.replace('SKILLCARD:','').trim());
+      chatSkillCard=json;chatDone=true;
+      addBotMsg('✅ ได้เลยครับ! นี่คือ <strong>Skill Card</strong> ของคุณ 🎴');
+      showSkillCard(json);
+      const area=document.getElementById('chat-input-area');if(area)area.style.display='none';
+    } else {
+      addBotMsg(botText);chatHistory=[...newHist,{role:'assistant',content:botText}];
+    }
+  }catch(e){hideTyping();addBotMsg('ขอโทษครับ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้งนะครับ');}
+  const inp3=document.getElementById('chat-input');if(inp3){inp3.disabled=false;inp3.focus();}
+}
+function showSkillCard(card){
+  const msgs=document.getElementById('chat-msgs');if(!msgs)return;
+  const psIcon={'aggressive':'🔴','chill':'🟢','strategic':'🔵'};
+  const wrap=document.createElement('div');
+  wrap.innerHTML=`<div class="skill-card-preview">
+    <div style="font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--acc);margin-bottom:16px">⚡ SKILL CARD</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      ${[['IGN',card.nickname],['GAME',card.game],['ROLE',card.role],['RANK',card.rank||'-'],['PLAYSTYLE',`${psIcon[card.playstyle]||'⚪'} ${card.playstyle}`],['ACTIVE',card.available_times?.[0]||'—']].map(([l,v])=>`<div style="background:var(--bg);border-radius:8px;padding:9px 12px"><div style="font-size:9px;color:var(--mut);letter-spacing:1.5px">${l}</div><div style="font-size:13px;font-weight:600;margin-top:3px">${v}</div></div>`).join('')}
+    </div>
+    <div style="background:var(--grn-dim);border:1px solid rgba(0,229,160,0.25);border-radius:var(--r);padding:12px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div><div style="font-size:9px;color:var(--mut);letter-spacing:1px">PERSONA</div><div style="font-family:var(--font-head);font-size:17px;font-weight:700;color:var(--grn)">${card.persona_tag}</div></div>
+      <span style="font-size:26px">🏆</span>
+    </div>
+    <button class="btn btn-primary" onclick="goToLogin()" style="width:100%;padding:12px;font-size:14px;border-radius:var(--r2)">🚀 เข้าสู่ Dashboard</button>
+  </div>`;
+  msgs.appendChild(wrap);msgs.scrollTo(0,msgs.scrollHeight);
+}
+
+
+// ═══════════════════════════════════════════════
+// WEEK 5: INTEGRATIONS TAB (LINE + Discord)
+// ═══════════════════════════════════════════════
+let lineConnected = true; // mock state
+let discordConnected = true;
+let discordConfig = {commandChannel:'#general',announceChannel:'#matches',autoPost:true};
+
+function buildIntegrationsTab(){
+  return `
+  <div style="display:grid;gap:16px">
+
+  <!-- LINE INTEGRATION -->
+  <div class="integration-card">
+    <div class="integration-header">
+      <div class="integration-logo" style="background:rgba(0,195,0,0.12);font-size:28px">💬</div>
+      <div style="flex:1">
+        <div class="integration-name">LINE Messaging API</div>
+        <div class="integration-status">ส่งแจ้งเตือน match และ moderation ผ่าน LINE</div>
+      </div>
+      ${lineConnected?badge('Connected','#00E5A0'):badge('Not Connected','#5A5A7A')}
+    </div>
+
+    <!-- Webhook URL -->
+    <div style="margin-bottom:14px">
+      <div class="form-label">Webhook URL</div>
+      <div style="display:flex;gap:8px;align-items:stretch">
+        <div class="webhook-readonly" id="line-wh-url">https://[project].supabase.co/functions/v1/line-webhook</div>
+        <button class="btn btn-outline btn-sm" onclick="copyText(document.getElementById('line-wh-url').textContent)">คัดลอก URL</button>
+      </div>
+    </div>
+
+    <!-- Setup Accordion -->
+    <div class="accordion-item" style="margin-bottom:12px">
+      <div class="accordion-header" onclick="toggleAccordion('line-setup')">
+        <span>📖 วิธีติดตั้ง LINE Webhook</span><span id="line-setup-icon">▼</span>
+      </div>
+      <div class="accordion-body" id="line-setup">
+        <ol class="step-list">
+          <li>ไปที่ <strong>LINE Developers Console</strong> (developers.line.biz)</li>
+          <li>สร้าง <strong>Messaging API Channel</strong> ใหม่หรือใช้ channel เดิม</li>
+          <li>วาง Webhook URL ด้านบนในช่อง <strong>Webhook URL</strong> ของ Channel</li>
+          <li>เปิดใช้งาน <strong>Use webhook</strong> และปิด <strong>Auto-reply messages</strong></li>
+          <li>กด <strong>"ยืนยันการเชื่อมต่อ"</strong> ด้านล่างเพื่อทดสอบ</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
+      <button class="btn btn-primary btn-sm" id="line-verify-btn" onclick="verifyLine()">ยืนยันการเชื่อมต่อ</button>
+      <button class="btn btn-outline btn-sm" onclick="toggleLine()">
+        ${lineConnected?'ตัดการเชื่อมต่อ':'เปิดใช้งาน LINE'}
+      </button>
+      <span style="font-size:11px;color:var(--mut)">Last ping: ${lineConnected?'2 นาทีที่แล้ว':'ไม่มีข้อมูล'}</span>
+    </div>
+
+    <!-- LINE Message Log -->
+    ${lineConnected?`
+    <div style="border-top:1px solid var(--bdr);padding-top:14px">
+      <div class="form-label" style="margin-bottom:10px">LINE Message Log (20 รายการล่าสุด)</div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Timestamp</th><th>User ID</th><th>Message Type</th><th>Action Taken</th></tr></thead>
+        <tbody>${[
+          {ts:'14:32:01','uid':'U1a2b3c4','type':'text','action':'forwarded'},
+          {ts:'14:28:15','uid':'U5d6e7f8','type':'match_request','action':'matched'},
+          {ts:'14:15:42','uid':'U9g0h1i2','type':'text','action':'flagged'},
+          {ts:'13:55:20','uid':'U3j4k5l6','type':'sticker','action':'ignored'},
+          {ts:'13:40:08','uid':'U7m8n9o0','type':'text','action':'forwarded'},
+        ].map(r=>`<tr>
+          <td style="font-family:var(--font-mono);font-size:10px;color:var(--mut)">${r.ts}</td>
+          <td style="font-family:var(--font-mono);font-size:10px">${r.uid}</td>
+          <td>${badge(r.type,r.type==='match_request'?'#00E5A0':'#7C5CFC')}</td>
+          <td>${badge(r.action,r.action==='flagged'?'#FF4757':r.action==='matched'?'#00E5A0':'#5A5A7A')}</td>
+        </tr>`).join('')}
+        </tbody></table>
+      </div>
+    </div>`:''}
+  </div>
+
+  <!-- DISCORD INTEGRATION -->
+  <div class="integration-card">
+    <div class="integration-header">
+      <div class="integration-logo" style="background:rgba(88,101,242,0.15);font-size:28px">🎮</div>
+      <div style="flex:1">
+        <div class="integration-name">Discord Bot</div>
+        <div class="integration-status">${discordConnected?'Connected to: <strong>Thai ROV Squad Server</strong>':'เพิ่ม Bot เข้า Discord Server ของคุณ'}</div>
+      </div>
+      ${discordConnected?badge('Connected','#5865F2'):badge('Not Connected','#5A5A7A')}
+    </div>
+
+    <!-- Webhook URL -->
+    <div style="margin-bottom:14px">
+      <div class="form-label">Bot Webhook URL</div>
+      <div style="display:flex;gap:8px;align-items:stretch">
+        <div class="webhook-readonly" id="discord-wh-url">https://[project].supabase.co/functions/v1/discord-webhook</div>
+        <button class="btn btn-outline btn-sm" onclick="copyText(document.getElementById('discord-wh-url').textContent)">คัดลอก</button>
+      </div>
+    </div>
+
+    <!-- Bot Invite -->
+    <div style="margin-bottom:14px">
+      <button class="btn btn-primary btn-sm" onclick="toast('เปิด Discord OAuth ใน production: discord.com/oauth2/authorize?client_id=...','info',5000)"
+        style="background:#5865F2">
+        + เพิ่ม Bot เข้ากลุ่ม Discord
+      </button>
+    </div>
+
+    <!-- Setup Accordion -->
+    <div class="accordion-item" style="margin-bottom:12px">
+      <div class="accordion-header" onclick="toggleAccordion('discord-setup')">
+        <span>📖 วิธีติดตั้ง Discord Bot</span><span id="discord-setup-icon">▼</span>
+      </div>
+      <div class="accordion-body" id="discord-setup">
+        <ol class="step-list">
+          <li>กด <strong>"เพิ่ม Bot เข้ากลุ่ม Discord"</strong> ด้านบน</li>
+          <li>เลือก <strong>Server</strong> ของคุณและกด <strong>Authorize</strong></li>
+          <li>Bot จะส่งข้อความทดสอบมาใน <strong>#general</strong> อัตโนมัติ</li>
+          <li>กลับมาที่ GuildOS และกด <strong>"ยืนยันการเชื่อมต่อ"</strong></li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Verify button -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
+      <button class="btn btn-primary btn-sm" onclick="verifyDiscord()">ยืนยันการเชื่อมต่อ</button>
+      <button class="btn btn-outline btn-sm" onclick="toggleDiscord()">${discordConnected?'ตัดการเชื่อมต่อ':'เปิดใช้งาน Discord'}</button>
+    </div>
+
+    <!-- Channel Config (if connected) -->
+    ${discordConnected?`
+    <div style="border-top:1px solid var(--bdr);padding-top:16px">
+      <div class="form-label" style="margin-bottom:12px">⚙ Discord Channel Config</div>
+      <div class="form-row">
+        <label class="form-label">Bot Commands Channel</label>
+        <select style="width:100%" onchange="discordConfig.commandChannel=this.value">
+          <option ${discordConfig.commandChannel==='#general'?'selected':''}>#general</option>
+          <option ${discordConfig.commandChannel==='#bot-commands'?'selected':''}>#bot-commands</option>
+          <option ${discordConfig.commandChannel==='#admin'?'selected':''}>#admin</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Match Announcement Channel</label>
+        <select style="width:100%" onchange="discordConfig.announceChannel=this.value">
+          <option ${discordConfig.announceChannel==='#matches'?'selected':''}>#matches</option>
+          <option ${discordConfig.announceChannel==='#general'?'selected':''}>#general</option>
+          <option ${discordConfig.announceChannel==='#announcements'?'selected':''}>#announcements</option>
+        </select>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;background:var(--surf);border-radius:var(--r);padding:12px 14px;margin-bottom:14px">
+        <div>
+          <div style="font-size:13px;font-weight:600">Auto-post team formations</div>
+          <div style="font-size:11px;color:var(--sub);margin-top:2px">ส่งข้อความอัตโนมัติเมื่อ AI จับทีมสำเร็จ</div>
+        </div>
+        <button class="toggle" onclick="discordConfig.autoPost=!discordConfig.autoPost;renderSettingsTab()" style="background:${discordConfig.autoPost?'var(--acc)':'var(--bdr)'}">
+          <div class="toggle-knob" style="left:${discordConfig.autoPost?22:3}px"></div>
+        </button>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="toast('บันทึก Discord config แล้ว','success')">บันทึก</button>
+    </div>`:''}
+  </div>
+  </div>`;
+}
+
+function initIntegrationsTab(){}
+
+function toggleAccordion(id){
+  const body=document.getElementById(id);
+  const icon=document.getElementById(id+'-icon');
+  if(!body)return;
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  if(icon)icon.textContent=isOpen?'▼':'▲';
+}
+
+async function verifyLine(){
+  const btn=document.getElementById('line-verify-btn');if(!btn)return;
+  btn.textContent='กำลังตรวจสอบ…';btn.disabled=true;
+  await new Promise(r=>setTimeout(r,1500));
+  btn.textContent='ยืนยันการเชื่อมต่อ';btn.disabled=false;
+  if(lineConnected) toast('✅ LINE Webhook ทำงานปกติ — 200 OK','success');
+  else toast('❌ ไม่สามารถเชื่อมต่อ LINE ได้ กรุณาตรวจสอบ Webhook URL','error',5000);
+}
+async function verifyDiscord(){
+  toast('🔄 กำลังตรวจสอบ Discord Bot…','info');
+  await new Promise(r=>setTimeout(r,1200));
+  if(discordConnected) toast('✅ Discord Bot ออนไลน์ — Thai ROV Squad Server','success');
+  else toast('❌ Discord Bot ออฟไลน์ กรุณาเพิ่ม Bot เข้า Server ก่อน','error',5000);
+}
+function toggleLine(){
+  lineConnected=!lineConnected;
+  toast(lineConnected?'เปิดใช้ LINE แล้ว':'ตัด LINE แล้ว',lineConnected?'success':'info');
+  renderSettingsTab();
+}
+function toggleDiscord(){
+  discordConnected=!discordConnected;
+  toast(discordConnected?'เปิดใช้ Discord Bot แล้ว':'ตัด Discord Bot แล้ว',discordConnected?'success':'info');
+  renderSettingsTab();
+}
+
+// ═══════════════════════════════════════════════
+// WEEK 5: SYSTEM HEALTH CHECKER
+// ═══════════════════════════════════════════════
+const HEALTH_CHECKS = [
+  {id:'supabase',name:'Supabase Connection',detail:'Ping database endpoint',icon:'🗄'},
+  {id:'line_wh',name:'LINE Webhook',detail:'Last ping < 24h',icon:'💬'},
+  {id:'discord_bot',name:'Discord Bot',detail:'Bot online in server',icon:'🎮'},
+  {id:'ai_mod',name:'AI Moderation',detail:'Last Claude API call successful',icon:'🛡'},
+  {id:'matchmaker',name:'Smart Matchmaker',detail:'Edge function responding',icon:'⚔'},
+  {id:'realtime',name:'Realtime Subscriptions',detail:'Supabase Realtime connected',icon:'⚡'},
+  {id:'data',name:'Data Integrity',detail:'Member count in expected range',icon:'📊'},
+];
+
+let healthResults = {};
+
+function buildHealthTab(){
+  const passed=Object.values(healthResults).filter(r=>r==='pass').length;
+  const total=HEALTH_CHECKS.length;
+  const allDone=Object.keys(healthResults).length===total;
+  return `
+  <!-- Status Banner -->
+  ${allDone?`
+  <div class="status-banner ${passed===total?'ok':'warn'}">
+    <span style="font-size:22px">${passed===total?'✅':'⚠️'}</span>
+    <div>
+      <div style="font-weight:700;font-size:15px">${passed===total?'ระบบทั้งหมดพร้อมใช้งาน':'พบปัญหา '+(total-passed)+' รายการ'}</div>
+      <div style="font-size:12px;opacity:0.7;margin-top:2px">ผ่าน ${passed}/${total} รายการ · อัปเดตล่าสุด: เมื่อกี้</div>
+    </div>
+  </div>`:`
+  <div class="status-banner warn">
+    <span style="font-size:22px">🔄</span>
+    <div><div style="font-weight:700;font-size:15px">กำลังตรวจสอบระบบ…</div><div style="font-size:12px;opacity:0.7;margin-top:2px">กรุณารอสักครู่</div></div>
+  </div>`}
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="card-title" style="margin:0">System Health Checklist</div>
+      <button class="btn btn-primary btn-sm" onclick="runHealthChecks()" id="recheck-btn">🔄 Re-check</button>
+    </div>
+    ${HEALTH_CHECKS.map(c=>{
+      const r=healthResults[c.id];
+      const status=r||'checking';
+      return `<div class="health-card ${status}" id="hc-${c.id}">
+        <div class="health-icon ${status}">
+          ${status==='pass'?'✅':status==='fail'?'❌':'<span style="animation:spin 1s linear infinite;display:inline-block">⟳</span>'}
+        </div>
+        <div style="flex:1">
+          <div class="health-name">${c.icon} ${c.name}</div>
+          <div class="health-detail" id="hd-${c.id}">${r==='pass'?'ผ่าน — ทำงานปกติ':r==='fail'?'ล้มเหลว — ตรวจสอบการเชื่อมต่อ':c.detail}</div>
+        </div>
+        ${status!=='checking'?`<span style="font-size:10px;color:var(--mut);white-space:nowrap">เมื่อกี้</span>`:''}
+      </div>`;
+    }).join('')}
+  </div>
+
+  <div class="card" style="font-size:12px;color:var(--sub);line-height:1.8">
+    <div class="card-title">📋 Checklist สำหรับ Launch</div>
+    ${[
+      ['✅','Landing page ทำงานบน mobile','done'],
+      ['✅','Admin login + community setup flow','done'],
+      ['✅','AI Moderation real-time table','done'],
+      ['✅','Smart Matchmaker + AI parse','done'],
+      ['✅','Insights charts + PDF export','done'],
+      ['✅','LINE + Discord integration display','done'],
+      ['⬜','เชื่อมต่อ Supabase จริง (replace mock data)','todo'],
+      ['⬜','Deploy Supabase Edge Functions','todo'],
+      ['⬜','ตั้งค่า LINE Messaging API จริง','todo'],
+      ['⬜','ตั้งค่า Discord Bot application','todo'],
+      ['⬜','UAT กับ Pilot Group 5 กลุ่ม','todo'],
+    ].map(([icon,text,status])=>`
+    <div style="display:flex;gap:10px;padding:6px 0;border-bottom:1px solid var(--bdr);align-items:center">
+      <span style="font-size:14px;flex-shrink:0">${icon}</span>
+      <span style="color:${status==='done'?'var(--txt)':'var(--mut)'}">${text}</span>
+      ${status==='done'?badge('Done','#00E5A0'):''}
+    </div>`).join('')}
+  </div>`;
+}
+
+async function runHealthChecks(){
+  healthResults={};
+  const btn=document.getElementById('recheck-btn');
+  if(btn){btn.textContent='กำลังตรวจสอบ…';btn.disabled=true;}
+  const area=document.getElementById('settings-tab-content');
+  if(area)area.innerHTML=buildHealthTab();
+
+  // Run checks sequentially with delays (simulate real checks)
+  const results = {
+    supabase:{pass:true,delay:600,detail:'PostgreSQL v15 · Latency: 45ms'},
+    line_wh:{pass:lineConnected,delay:900,detail:lineConnected?'Last ping: 2 min ago':'ไม่มี ping ใน 24h'},
+    discord_bot:{pass:discordConnected,delay:1100,detail:discordConnected?'Bot online · 3 servers':'Bot offline'},
+    ai_mod:{pass:true,delay:1400,detail:'claude-sonnet-4-20250514 · Last call: 8 min ago'},
+    matchmaker:{pass:true,delay:1700,detail:'Edge Function responding · avg 1.2s'},
+    realtime:{pass:true,delay:2000,detail:'WebSocket connected · 3 channels active'},
+    data:{pass:true,delay:2200,detail:`Members: ${AUTH.community?.memberCount||58} · Posts: ${POSTS.length} · Teams: ${TEAMS.length}`},
+  };
+
+  for(const [id,r] of Object.entries(results)){
+    await new Promise(res=>setTimeout(res,r.delay-Object.keys(results).indexOf(id)*100));
+    healthResults[id]=r.pass?'pass':'fail';
+    const card=document.getElementById(`hc-${id}`);
+    const detail=document.getElementById(`hd-${id}`);
+    if(card){
+      card.className=`health-card ${r.pass?'pass':'fail'}`;
+      const icon=card.querySelector('.health-icon');
+      if(icon){icon.className=`health-icon ${r.pass?'pass':'fail'}`;icon.textContent=r.pass?'✅':'❌';}
+    }
+    if(detail)detail.textContent=r.detail;
+  }
+  if(btn){btn.textContent='🔄 Re-check';btn.disabled=false;}
+  const passed=Object.values(healthResults).filter(v=>v==='pass').length;
+  const banner=document.querySelector('.status-banner');
+  if(banner){
+    banner.className=`status-banner ${passed===HEALTH_CHECKS.length?'ok':'warn'}`;
+    banner.innerHTML=`<span style="font-size:22px">${passed===HEALTH_CHECKS.length?'✅':'⚠️'}</span>
+    <div>
+      <div style="font-weight:700;font-size:15px">${passed===HEALTH_CHECKS.length?'ระบบทั้งหมดพร้อมใช้งาน':'พบปัญหา '+(HEALTH_CHECKS.length-passed)+' รายการ'}</div>
+      <div style="font-size:12px;opacity:0.7;margin-top:2px">ผ่าน ${passed}/${HEALTH_CHECKS.length} รายการ · อัปเดตล่าสุด: เมื่อกี้</div>
+    </div>`;
+  }
+  toast(passed===HEALTH_CHECKS.length?'✅ ระบบทั้งหมดปกติ':'⚠ พบปัญหา '+(HEALTH_CHECKS.length-passed)+' รายการ', passed===HEALTH_CHECKS.length?'success':'error');
+}
+
+// ═══════════════════════════════════════════════
+// WEEK 5: ERROR BOUNDARY + SKELETON + MOBILE HELPERS
+// ═══════════════════════════════════════════════
+function withErrorBoundary(fn, label='หน้านี้'){
+  try{ return fn(); }
+  catch(e){
+    console.error('Error in',label,e);
+    return `<div class="error-boundary">
+      <div class="error-boundary-icon">⚠️</div>
+      <div class="error-boundary-title">เกิดข้อผิดพลาด</div>
+      <div class="error-boundary-msg">${label} โหลดไม่สำเร็จ กรุณาลองใหม่อีกครั้ง<br><small style="font-family:var(--font-mono);color:var(--mut)">${e.message}</small></div>
+      <button class="btn btn-primary" onclick="renderPage('${label}')">🔄 ลองใหม่</button>
+    </div>`;
+  }
+}
+
+function renderPageSkeleton(){
+  return `<div style="padding:28px 0">
+    ${[1,2,3].map(()=>`<div class="skel-row">
+      <div class="skel-block" style="height:80px;flex:1"></div>
+      <div class="skel-block" style="height:80px;flex:1"></div>
+      <div class="skel-block" style="height:80px;flex:1"></div>
+    </div>`).join('')}
+    <div class="skeleton" style="height:200px;margin-top:8px"></div>
+  </div>`;
+}
+
+// Mobile sidebar
+function openMobileSidebar(){
+  document.getElementById('mobile-sidebar').classList.add('open');
+  document.getElementById('mobile-nav-overlay').classList.add('show');
+}
+function closeMobileSidebar(){
+  document.getElementById('mobile-sidebar').classList.remove('open');
+  document.getElementById('mobile-nav-overlay').classList.remove('show');
+}
+
+// Landing hamburger
+function toggleMobileNav(){
+  const nav=document.getElementById('landing-nav-btns');
+  nav?.classList.toggle('mobile-open');
+}
+
+
+function buildDeployTab(){
+  const url = SUPABASE_URL, configured = url && !url.includes('YOUR_PROJECT');
+  const fns = ['moderate-post','run-matchmaker','log-activity','calculate-rfm','send-line-message','send-discord-webhook','schedule-reminders'];
+  return `
+  <div class="page-hdr"><h1>🚀 Deploy</h1><p>ตั้งค่าการเชื่อมต่อกับ Supabase, LINE และ Discord</p></div>
+
+  <!-- Config Status -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">⚙️ Configuration Status</div>
+    <div style="display:grid;gap:8px;margin-top:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surf2);border-radius:var(--r)">
+        <span style="font-size:13px">SUPABASE_URL</span>
+        <span style="font-family:var(--font-mono);font-size:11px;padding:3px 10px;border-radius:6px;background:${configured?'rgba(0,229,160,0.12)':'rgba(255,71,87,0.1)'};color:${configured?'var(--grn)':'var(--red)'}">${configured?'✓ ตั้งค่าแล้ว':'✗ ยังไม่ได้ตั้งค่า'}</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surf2);border-radius:var(--r)">
+        <span style="font-size:13px">LINE_CHANNEL_ACCESS_TOKEN</span>
+        <span style="font-family:var(--font-mono);font-size:11px;padding:3px 10px;border-radius:6px;background:${lineConnected?'rgba(0,229,160,0.12)':'rgba(255,165,2,0.1)'};color:${lineConnected?'var(--grn)':'var(--amb)'}">${lineConnected?'✓ ตั้งค่าแล้ว':'⚠ ยังไม่ได้ตั้งค่า'}</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surf2);border-radius:var(--r)">
+        <span style="font-size:13px">DISCORD_BOT_TOKEN</span>
+        <span style="font-family:var(--font-mono);font-size:11px;padding:3px 10px;border-radius:6px;background:${discordConnected?'rgba(0,229,160,0.12)':'rgba(255,165,2,0.1)'};color:${discordConnected?'var(--grn)':'var(--amb)'}">${discordConnected?'✓ ตั้งค่าแล้ว':'⚠ ยังไม่ได้ตั้งค่า'}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase Config Input -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">🗄 Supabase</div>
+    <div style="margin-top:12px;display:grid;gap:10px">
+      <div>
+        <label style="font-size:11px;color:var(--sub);display:block;margin-bottom:5px">SUPABASE_URL</label>
+        <input type="text" id="cfg-supabase-url" value="${configured?url:''}" placeholder="https://xxxx.supabase.co" style="font-family:var(--font-mono);font-size:12px">
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--sub);display:block;margin-bottom:5px">SUPABASE_ANON_KEY</label>
+        <input type="text" id="cfg-supabase-key" value="${SUPABASE_ANON_KEY&&!SUPABASE_ANON_KEY.includes('YOUR')?'••••••••••••'+SUPABASE_ANON_KEY.slice(-8):''}" placeholder="eyJhbGci..." style="font-family:var(--font-mono);font-size:12px">
+      </div>
+      <button class="btn btn-primary" onclick="saveSupabaseConfig()" style="align-self:flex-start;padding:8px 20px">บันทึก</button>
+    </div>
+    <div style="margin-top:14px;padding:12px;background:var(--surf2);border-radius:var(--r)">
+      <div style="font-size:11px;color:var(--mut);margin-bottom:8px">CLI Commands</div>
+      <pre style="font-family:var(--font-mono);font-size:11px;color:var(--sub);white-space:pre-wrap;margin:0">supabase login
+supabase link --project-ref YOUR_PROJECT_ID
+supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
+supabase secrets set SUPABASE_SERVICE_ROLE_KEY=...</pre>
+    </div>
+  </div>
+
+  <!-- Edge Functions Status -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">⚡ Edge Functions</div>
+    <div style="margin-top:12px;display:grid;gap:8px" id="fn-status-grid">
+      ${fns.map(fn=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:var(--surf2);border-radius:var(--r)">
+        <span style="font-family:var(--font-mono);font-size:12px">${fn}</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="fn-status" id="fnst-${fn.replace(/-/g,'_')}" style="font-size:10px;color:var(--mut)">ยังไม่ได้ตรวจ</span>
+          <button onclick="pingFunction('${fn}')" style="background:transparent;border:1px solid var(--bdr);border-radius:6px;padding:3px 10px;cursor:pointer;font-size:10px;color:var(--sub);font-family:var(--font-body)">ping</button>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button class="btn btn-primary" onclick="pingAllFunctions()" style="padding:9px">⚡ Ping ทั้งหมด</button>
+      <div style="background:var(--surf2);border-radius:var(--r);padding:8px 12px">
+        <div style="font-size:10px;color:var(--mut);margin-bottom:3px">Deploy command</div>
+        <code style="font-size:10px;color:var(--sub)">supabase functions deploy --all</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- LINE Config -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">💬 LINE Messaging API</div>
+    <div style="margin-top:12px;display:grid;gap:10px">
+      <div>
+        <label style="font-size:11px;color:var(--sub);display:block;margin-bottom:5px">Channel Access Token</label>
+        <input type="password" id="cfg-line-token" placeholder="วาง token ที่ได้จาก LINE Developers Console" style="font-family:var(--font-mono);font-size:12px">
+      </div>
+      <button class="btn btn-primary" onclick="saveLineToken()" style="align-self:flex-start;padding:8px 20px">บันทึกและทดสอบ</button>
+    </div>
+    <div style="margin-top:12px;padding:12px;background:var(--surf2);border-radius:var(--r);font-size:12px;color:var(--sub);line-height:1.8">
+      <strong>ขั้นตอน:</strong><br>
+      1. <a href="https://developers.line.biz" target="_blank" style="color:var(--acc)">developers.line.biz</a> → สร้าง Provider<br>
+      2. Create Channel → Messaging API<br>
+      3. Tab "Messaging API" → Issue Channel access token<br>
+      4. CLI: <code>supabase secrets set LINE_CHANNEL_ACCESS_TOKEN=...</code>
+    </div>
+  </div>
+
+  <!-- Discord Config -->
+  <div class="card">
+    <div class="card-title">🎮 Discord Bot</div>
+    <div style="margin-top:12px;display:grid;gap:10px">
+      <div>
+        <label style="font-size:11px;color:var(--sub);display:block;margin-bottom:5px">Bot Token</label>
+        <input type="password" id="cfg-discord-token" placeholder="วาง Bot token จาก Discord Developer Portal" style="font-family:var(--font-mono);font-size:12px">
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--sub);display:block;margin-bottom:5px">Webhook URL (สำหรับ channel notifications)</label>
+        <input type="text" id="cfg-discord-webhook" placeholder="https://discord.com/api/webhooks/..." style="font-family:var(--font-mono);font-size:12px">
+      </div>
+      <button class="btn btn-primary" onclick="saveDiscordConfig()" style="align-self:flex-start;padding:8px 20px">บันทึกและทดสอบ</button>
+    </div>
+    <div style="margin-top:12px;padding:12px;background:var(--surf2);border-radius:var(--r);font-size:12px;color:var(--sub);line-height:1.8">
+      <strong>ขั้นตอน:</strong><br>
+      1. <a href="https://discord.com/developers/applications" target="_blank" style="color:var(--acc)">discord.com/developers/applications</a><br>
+      2. New Application → Bot → Reset Token → Copy<br>
+      3. Server Settings → Integrations → Webhooks → Copy URL<br>
+      4. CLI: <code>supabase secrets set DISCORD_BOT_TOKEN=...</code>
+    </div>
+  </div>`;
+}
+
+function saveSupabaseConfig(){
+  const url = document.getElementById('cfg-supabase-url')?.value?.trim();
+  const key = document.getElementById('cfg-supabase-key')?.value?.trim();
+  if(!url||!key||key.startsWith('•')){ toast('กรุณากรอก URL และ Key ให้ครบ','error'); return; }
+  // อัปเดต runtime (ต้องแก้ในไฟล์ HTML สำหรับ production)
+  window.SUPABASE_URL_RT = url;
+  window.SUPABASE_ANON_KEY_RT = key;
+  localStorage.setItem('guildos_supabase_url', url);
+  localStorage.setItem('guildos_supabase_key', key);
+  toast('✅ บันทึก Supabase config แล้ว — reload หน้าเพื่อใช้งาน','success',4000);
+}
+
+async function pingFunction(fnName){
+  const el = document.getElementById('fnst-'+fnName.replace(/-/g,'_'));
+  if(el) el.textContent = 'กำลังตรวจ...';
+  const url = localStorage.getItem('guildos_supabase_url')||SUPABASE_URL;
+  const key = localStorage.getItem('guildos_supabase_key')||SUPABASE_ANON_KEY;
+  if(!url||url.includes('YOUR')){ if(el) el.style.color='var(--red)'; if(el) el.textContent='ยังไม่ได้ตั้งค่า URL'; return; }
+  try {
+    const t0=Date.now();
+    const r = await fetch(`${url}/functions/v1/${fnName}`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify({_ping:true})});
+    const ms=Date.now()-t0;
+    const ok = r.status!==404&&r.status!==503;
+    if(el){ el.textContent=ok?`✓ Online · ${ms}ms`:`✗ Offline (${r.status})`; el.style.color=ok?'var(--grn)':'var(--red)'; }
+  } catch(e){ if(el){ el.textContent='✗ Error'; el.style.color='var(--red)'; } }
+}
+
+async function pingAllFunctions(){
+  const fns=['moderate-post','run-matchmaker','log-activity','calculate-rfm','send-line-message','send-discord-webhook','schedule-reminders'];
+  toast('⚡ กำลัง ping ทุก function...','info');
+  await Promise.all(fns.map(fn=>pingFunction(fn)));
+}
+
+async function saveLineToken(){
+  const token = document.getElementById('cfg-line-token')?.value?.trim();
+  if(!token){ toast('กรุณากรอก Token','error'); return; }
+  // บันทึกลง localStorage (production: ใช้ supabase secrets set)
+  localStorage.setItem('guildos_line_token', token);
+  // ทดสอบโดยส่ง curl-style ping
+  try {
+    const r = await fetch('https://api.line.me/v2/bot/info',{headers:{'Authorization':`Bearer ${token}`}});
+    const d = await r.json();
+    if(r.ok){ toast(`✅ LINE Bot: ${d.displayName} · พร้อมใช้งาน`,'success'); }
+    else { toast(`LINE token ไม่ถูกต้อง: ${d.message}`,'error'); }
+  } catch(e){ toast('LINE API ไม่ตอบสนอง','error'); }
+}
+
+async function saveDiscordConfig(){
+  const token = document.getElementById('cfg-discord-token')?.value?.trim();
+  const webhook = document.getElementById('cfg-discord-webhook')?.value?.trim();
+  if(!webhook){ toast('กรุณากรอก Webhook URL','error'); return; }
+  localStorage.setItem('guildos_discord_webhook', webhook);
+  if(token) localStorage.setItem('guildos_discord_token', token);
+  // ทดสอบ webhook
+  try {
+    const r = await fetch(webhook,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:'🎮 GuildOS connected! Bot พร้อมแล้ว'})});
+    if(r.ok||r.status===204){ toast('✅ ส่ง test message ไป Discord แล้ว! ตรวจสอบ channel','success'); }
+    else { toast(`Discord webhook error: ${r.status}`,'error'); }
+  } catch(e){ toast('Discord webhook ไม่ตอบสนอง','error'); }
+}
+
+// Show 404
+function show404(){
+  hideAll();
+  document.getElementById('not-found').classList.add('show');
+}
+
+// ═══════════════════════════════════════════════
+// INIT — check auth on load
+
+// ═══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  const u = AUTH.user;
+  if(u && AUTH.community) enterDashboard();
+  else if(u) showSetup();
+  // else: landing page is already shown
+  // Close mobile nav when clicking outside
+  document.addEventListener('click',(e)=>{
+    const nav=document.getElementById('landing-nav-btns');
+    const hamburger=document.getElementById('hamburger-btn');
+    if(nav&&hamburger&&!nav.contains(e.target)&&!hamburger.contains(e.target)){
+      nav.classList.remove('mobile-open');
+    }
+  });
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){ closeDrawer(); closeModal(); }
+});
+</script>
+</body>
+</html>
